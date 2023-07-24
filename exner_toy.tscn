@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://2ph4f16ascne"]
+
+[ext_resource type="PackedScene" uid="uid://do00q4yudkr2k" path="res://exner_toy_input.tscn" id="1_gxsgn"]
+[ext_resource type="Texture2D" uid="uid://cclhe36w7jx68" path="res://icons/query_stats_FILL0_wght400_GRAD200_opsz48.svg" id="2_4peeq"]
+[ext_resource type="PackedScene" uid="uid://d2pc0u38e2pm7" path="res://test.tscn" id="4_k2ohx"]
+
+[node name="ExnerToy" type="Node3D"]
+
+[node name="Input" parent="." instance=ExtResource("1_gxsgn")]
+
+[node name="Details" type="Button" parent="."]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -8.0
+offset_top = -8.0
+grow_horizontal = 0
+grow_vertical = 0
+tooltip_text = "Toggle Details"
+icon = ExtResource("2_4peeq")
+flat = true
+
+[node name="Node3D" parent="." instance=ExtResource("4_k2ohx")]

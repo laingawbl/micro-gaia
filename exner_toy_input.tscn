@@ -1,0 +1,213 @@
+[gd_scene load_steps=14 format=3 uid="uid://do00q4yudkr2k"]
+
+[ext_resource type="Script" path="res://exner_toy_input.gd" id="1_6ut57"]
+[ext_resource type="Texture2D" uid="uid://rbgdjkd3owar" path="res://icons/menu_FILL0_wght400_GRAD200_opsz48.svg" id="2_20rtm"]
+[ext_resource type="Texture2D" uid="uid://b7e1l2unl0a8k" path="res://icons/folder_open_FILL0_wght400_GRAD200_opsz48.svg" id="3_ljt7a"]
+[ext_resource type="Texture2D" uid="uid://c3u3ah5n5guym" path="res://icons/restart_alt_FILL0_wght400_GRAD200_opsz48.svg" id="4_kxg2m"]
+[ext_resource type="Texture2D" uid="uid://c6w5a5cvk3p1f" path="res://icons/navigate_before_FILL0_wght400_GRAD200_opsz24.svg" id="5_j80fp"]
+[ext_resource type="Texture2D" uid="uid://0unn05tkjnlt" path="res://icons/edit_FILL0_wght700_GRAD200_opsz48.svg" id="5_u7m14"]
+[ext_resource type="Texture2D" uid="uid://b0m0f0ejaj6us" path="res://icons/navigate_next_FILL0_wght400_GRAD200_opsz24.svg" id="6_ajhtr"]
+[ext_resource type="Texture2D" uid="uid://b3ivagde2m147" path="res://icons/help_FILL0_wght400_GRAD0_opsz40.svg" id="8_5pu5t"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gdxvs"]
+bg_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_glnwc"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ocgwk"]
+bg_color = Color(0.67451, 0.843137, 0.843137, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1rjuq"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_islh2"]
+bg_color = Color(0.18763, 0.234375, 0.234017, 1)
+
+[node name="Input" type="Control"]
+layout_mode = 3
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 870.0
+grow_vertical = 2
+script = ExtResource("1_6ut57")
+
+[node name="Content" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Ribbon" type="PanelContainer" parent="Content"]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_styles/panel = SubResource("StyleBoxFlat_gdxvs")
+
+[node name="TLButtons" type="VBoxContainer" parent="Content/Ribbon"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="Expand" type="Button" parent="Content/Ribbon/TLButtons"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+tooltip_text = "Expand/Collapse"
+toggle_mode = true
+icon = ExtResource("2_20rtm")
+flat = true
+
+[node name="Params" type="Button" parent="Content/Ribbon/TLButtons"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+tooltip_text = "Edit Parameters"
+toggle_mode = true
+text = "
+"
+icon = ExtResource("5_u7m14")
+flat = true
+
+[node name="Load" type="Button" parent="Content/Ribbon/TLButtons"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+tooltip_text = "Load Preset"
+icon = ExtResource("3_ljt7a")
+flat = true
+
+[node name="Reset" type="Button" parent="Content/Ribbon/TLButtons"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+tooltip_text = "Reset Input"
+text = "
+"
+icon = ExtResource("4_kxg2m")
+flat = true
+
+[node name="Input" type="Control" parent="Content"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Ics" type="VBoxContainer" parent="Content/Input"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+
+[node name="TopBar" type="HBoxContainer" parent="Content/Input/Ics"]
+layout_mode = 2
+
+[node name="PrevCol" type="Button" parent="Content/Input/Ics/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 8
+icon = ExtResource("5_j80fp")
+
+[node name="ICScroll" type="HScrollBar" parent="Content/Input/Ics/TopBar"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 512.0
+step = 1.0
+page = 7.0
+
+[node name="NextCol" type="Button" parent="Content/Input/Ics/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 8
+icon = ExtResource("6_ajhtr")
+
+[node name="ICEdit" type="Tree" parent="Content/Input/Ics"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+column_titles_visible = true
+hide_root = true
+select_mode = 2
+
+[node name="Params" type="Panel" parent="Content/Input"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Help" type="Button" parent="Content/Input"]
+layout_mode = 2
+offset_left = 810.0
+offset_right = 860.0
+offset_bottom = 48.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+tooltip_text = "Clear Input Grid"
+focus_mode = 0
+theme_override_colors/icon_normal_color = Color(0, 0, 0, 0.498039)
+theme_override_styles/normal = SubResource("StyleBoxFlat_glnwc")
+theme_override_styles/hover = SubResource("StyleBoxFlat_glnwc")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ocgwk")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_ocgwk")
+theme_override_styles/focus = SubResource("StyleBoxFlat_1rjuq")
+toggle_mode = true
+text = "
+"
+icon = ExtResource("8_5pu5t")
+icon_alignment = 1
+
+[node name="Help" type="MarginContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 200
+theme_override_constants/margin_top = 100
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 100
+
+[node name="Panel" type="Panel" parent="Help"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_islh2")
+
+[node name="InnerMargins" type="MarginContainer" parent="Help/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 10
+
+[node name="Label" type="RichTextLabel" parent="Help/Panel/InnerMargins"]
+layout_mode = 2
+bbcode_enabled = true
+
+[connection signal="toggled" from="Content/Ribbon/TLButtons/Expand" to="." method="_on_expand_toggled"]
+[connection signal="toggled" from="Content/Ribbon/TLButtons/Params" to="." method="_on_params_toggled"]
+[connection signal="pressed" from="Content/Input/Ics/TopBar/PrevCol" to="." method="_on_prev_col_pressed"]
+[connection signal="value_changed" from="Content/Input/Ics/TopBar/ICScroll" to="." method="_on_ic_scroll_value_changed"]
+[connection signal="pressed" from="Content/Input/Ics/TopBar/NextCol" to="." method="_on_next_col_pressed"]
+[connection signal="item_edited" from="Content/Input/Ics/ICEdit" to="." method="_on_ic_edit_item_edited"]
+[connection signal="toggled" from="Content/Input/Help" to="." method="_on_help_toggled"]

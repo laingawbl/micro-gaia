@@ -1,0 +1,18 @@
+This area is where you edit the model's [i]parameters[/i] and [i]initial conditions [/i](ICs). To hide and show this area, click the [img=24x24]res://icons/menu_FILL0_wght400_GRAD200_opsz48.svg[/img] [b]Expand/Collapse[/b] button.
+
+[b]Parameters[/b]
+[indent]
+Click on the [img=24x24]res://icons/edit_FILL0_wght700_GRAD200_opsz48.svg[/img] [b]Edit Parameters[/b] button to edit the model's parameters, like gravity or the gas constant. The model will update itself automatically.
+[/indent]
+[b]Initial Conditions[/b]
+[indent]
+When not editing parameters, you see a spreadsheet-like area, where you can manually input the model's [i]initial conditions[/i].
+
+Each column in the spreadsheet represents a latitude, from the North Pole (column 0) to the South Pole (column 512). The rows represent surfaces of constant pressure (in the [i]Level[/i] column). The top row is the tropopause (least pressure), and the bottom row is at ground level.
+
+Currently, the only IC is the starting potential temperature (θ) of the atmosphere. The model uses this data to calculate the height of each pressure surface. Generally, in a stable atmosphere, potential temperature increases with height.
+[/indent]
+[b]Loading input files[/b]
+[indent]
+Instead of manually entering ICs, you can click on the [img=24x24]res://icons/folder_open_FILL0_wght400_GRAD200_opsz48.svg[/img] [b]Load Preset[/b] button to load them from a file. To reset the ICs to their defaults, click the [img=24x24]res://icons/restart_alt_FILL0_wght400_GRAD200_opsz48.svg[/img] [b]Reset Input[/b] button.
+[/indent]
