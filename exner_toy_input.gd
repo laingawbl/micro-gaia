@@ -19,6 +19,8 @@ var collapse: bool = false:
 	set = _set_collapse,
 	get = _get_collapse
 
+var defaults: ConfigFile
+
 
 func _set_row_ofs(p) -> void:
 	row_ofs = clamp(p, 0, SimData.nX - nDispCols)
@@ -76,7 +78,8 @@ func layout():
 	var rows = root.get_children()
 	for i in range(SimData.nR):
 		var row = rows[i]
-		row.set_text(0, str(SimData.nR - i))
+		var halfLevelInMb = SimData.halfLevels[i] / 100
+		row.set_text(0, String.num(halfLevelInMb, 0))
 		for j in range(1, nDispCols):
 			(
 				row
@@ -87,9 +90,17 @@ func layout():
 
 
 func _ready():
-	var input_helptext = FileAccess.open("res://input_helptext.bb.txt", FileAccess.READ).get_as_text(true)
+	SimData.connect("param_update", Callable(self, "params_did_update"))
+	SimData.connect("ic_update", Callable(self, "layout"))
+
+	var input_helptext = (
+		FileAccess . open("res://input_helptext.bb.txt", FileAccess.READ) . get_as_text(true)
+	)
 	$Help/Panel/InnerMargins/Label.text = input_helptext
-	
+
+	defaults = ConfigFile.new()
+	defaults.load("res://data/default_params.ini")
+
 	var root = tree.create_item()
 	tree.hide_root = true
 	tree.set_columns(nDispCols)
@@ -140,6 +151,7 @@ func _on_ic_edit_item_edited():
 		for j in range(1, nDispCols):
 			SimData.ICTemperature[row_ofs + j - 1][i] = row.get_text(j).to_float()
 	needs_layout = true
+	SimData.set_ics_changed()
 
 
 func _on_expand_toggled(button_pressed):
@@ -147,8 +159,53 @@ func _on_expand_toggled(button_pressed):
 
 
 func _on_params_toggled(button_pressed):
-	_set_editing_params(button_pressed)
+	if collapse:
+		_set_collapse(false)
+		_set_editing_params(true)
+	else:
+		_set_editing_params(button_pressed)
 
 
 func _on_help_toggled(button_pressed):
 	$Help.visible = button_pressed
+
+
+func _on_gravity_value_changed(value):
+	SimData.g = value
+
+
+func _on_molarMass_value_changed(value):
+	SimData.mm = value
+
+
+func _on_cp_value_changed(value):
+	SimData.cp = value
+
+
+func _on_Po_value_changed(value):
+	SimData.Po = value * 1e3
+
+
+func _on_Pt_value_changed(value):
+	SimData.Pt = value * 1e3
+
+
+func _on_reset_pressed():
+	SimData.g = defaults.get_value("", "g")
+	SimData.mm = defaults.get_value("", "mm")
+	SimData.cp = defaults.get_value("", "cp")
+	SimData.Po = defaults.get_value("", "Po")
+	SimData.Pt = defaults.get_value("", "Pt")
+
+	var theta = defaults.get_value("", "UniformTheta")
+	for i in range(SimData.nX):
+		SimData.ICTemperature[i].fill(theta)
+	SimData.set_ics_changed()
+
+
+func params_did_update():
+	$Content/Input/Params/InnerMargins/List/Gravity/Value.set_value_no_signal(SimData.g)
+	$Content/Input/Params/InnerMargins/List/MolarMass/Value.set_value_no_signal(SimData.mm)
+	$Content/Input/Params/InnerMargins/List/IsobaricHeatCap/Value.set_value_no_signal(SimData.cp)
+	$Content/Input/Params/InnerMargins/List/RefPressure/Value.set_value_no_signal(SimData.Po / 1e3)
+	$Content/Input/Params/InnerMargins/List/TopPressure/Value.set_value_no_signal(SimData.Pt / 1e3)

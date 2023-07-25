@@ -18,3 +18,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 SimData="*res://sim_data.gd"
+
+[debug]
+
+gdscript/warnings/integer_division=0
