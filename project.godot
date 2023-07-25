@@ -22,3 +22,7 @@ SimData="*res://sim_data.gd"
 [debug]
 
 gdscript/warnings/integer_division=0
+
+[gui]
+
+theme/custom_font="res://font/space-mono-font/SpaceMonoRegular-JRrmm.ttf"
