@@ -84,26 +84,21 @@ anchors_preset = 9
 anchor_bottom = 1.0
 offset_right = 870.0
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("1_6ut57")
 
-[node name="Content" type="HBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Ribbon" type="PanelContainer" parent="Content"]
+[node name="Ribbon" type="PanelContainer" parent="."]
 layout_mode = 2
+offset_right = 58.0
+offset_bottom = 648.0
 size_flags_horizontal = 8
 theme_override_styles/panel = SubResource("StyleBoxFlat_gdxvs")
 
-[node name="TLButtons" type="VBoxContainer" parent="Content/Ribbon"]
+[node name="TLButtons" type="VBoxContainer" parent="Ribbon"]
 layout_mode = 2
 size_flags_horizontal = 0
 
-[node name="Expand" type="Button" parent="Content/Ribbon/TLButtons"]
+[node name="Expand" type="Button" parent="Ribbon/TLButtons"]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
@@ -112,7 +107,7 @@ toggle_mode = true
 icon = ExtResource("2_20rtm")
 flat = true
 
-[node name="Params" type="Button" parent="Content/Ribbon/TLButtons"]
+[node name="Params" type="Button" parent="Ribbon/TLButtons"]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
@@ -123,7 +118,7 @@ text = "
 icon = ExtResource("5_u7m14")
 flat = true
 
-[node name="Load" type="Button" parent="Content/Ribbon/TLButtons"]
+[node name="Load" type="Button" parent="Ribbon/TLButtons"]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
@@ -131,7 +126,7 @@ tooltip_text = "Load Preset"
 icon = ExtResource("3_ljt7a")
 flat = true
 
-[node name="Reset" type="Button" parent="Content/Ribbon/TLButtons"]
+[node name="Reset" type="Button" parent="Ribbon/TLButtons"]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
@@ -141,11 +136,15 @@ text = "
 icon = ExtResource("4_kxg2m")
 flat = true
 
-[node name="Input" type="Control" parent="Content"]
+[node name="Input" type="Control" parent="."]
 layout_mode = 2
+anchors_preset = 0
+offset_left = 62.0
+offset_right = 870.0
+offset_bottom = 648.0
 size_flags_horizontal = 3
 
-[node name="Ics" type="VBoxContainer" parent="Content/Input"]
+[node name="Ics" type="VBoxContainer" parent="Input"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -154,10 +153,10 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 
-[node name="TopBar" type="HBoxContainer" parent="Content/Input/Ics"]
+[node name="TopBar" type="HBoxContainer" parent="Input/Ics"]
 layout_mode = 2
 
-[node name="PrevCol" type="Button" parent="Content/Input/Ics/TopBar"]
+[node name="PrevCol" type="Button" parent="Input/Ics/TopBar"]
 layout_mode = 2
 size_flags_horizontal = 8
 theme_override_styles/normal = SubResource("StyleBoxFlat_rb53x")
@@ -165,7 +164,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_edkig")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_edkig")
 icon = ExtResource("5_j80fp")
 
-[node name="ICScroll" type="HScrollBar" parent="Content/Input/Ics/TopBar"]
+[node name="ICScroll" type="HScrollBar" parent="Input/Ics/TopBar"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -178,7 +177,7 @@ max_value = 512.0
 step = 1.0
 page = 7.0
 
-[node name="NextCol" type="Button" parent="Content/Input/Ics/TopBar"]
+[node name="NextCol" type="Button" parent="Input/Ics/TopBar"]
 layout_mode = 2
 size_flags_horizontal = 8
 theme_override_styles/normal = SubResource("StyleBoxFlat_rb53x")
@@ -186,7 +185,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_edkig")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_edkig")
 icon = ExtResource("6_ajhtr")
 
-[node name="ICEdit" type="Tree" parent="Content/Input/Ics"]
+[node name="ICEdit" type="Tree" parent="Input/Ics"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -194,7 +193,7 @@ column_titles_visible = true
 hide_root = true
 select_mode = 2
 
-[node name="Params" type="Panel" parent="Content/Input"]
+[node name="Params" type="Panel" parent="Input"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -204,7 +203,7 @@ offset_right = -400.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="InnerMargins" type="MarginContainer" parent="Content/Input/Params"]
+[node name="InnerMargins" type="MarginContainer" parent="Input/Params"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -216,20 +215,20 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="List" type="VBoxContainer" parent="Content/Input/Params/InnerMargins"]
+[node name="List" type="VBoxContainer" parent="Input/Params/InnerMargins"]
 layout_mode = 2
 
-[node name="Gravity" type="HBoxContainer" parent="Content/Input/Params/InnerMargins/List"]
+[node name="Gravity" type="HBoxContainer" parent="Input/Params/InnerMargins/List"]
 layout_mode = 2
 
-[node name="Label" type="RichTextLabel" parent="Content/Input/Params/InnerMargins/List/Gravity"]
+[node name="Label" type="RichTextLabel" parent="Input/Params/InnerMargins/List/Gravity"]
 layout_mode = 2
 size_flags_horizontal = 3
 bbcode_enabled = true
 text = "[b]g[/b] - Gravity "
 fit_content = true
 
-[node name="Value" type="SpinBox" parent="Content/Input/Params/InnerMargins/List/Gravity"]
+[node name="Value" type="SpinBox" parent="Input/Params/InnerMargins/List/Gravity"]
 layout_mode = 2
 size_flags_horizontal = 3
 step = 0.01
@@ -237,17 +236,17 @@ value = 9.81
 alignment = 2
 suffix = "m/s²"
 
-[node name="MolarMass" type="HBoxContainer" parent="Content/Input/Params/InnerMargins/List"]
+[node name="MolarMass" type="HBoxContainer" parent="Input/Params/InnerMargins/List"]
 layout_mode = 2
 
-[node name="Label" type="RichTextLabel" parent="Content/Input/Params/InnerMargins/List/MolarMass"]
+[node name="Label" type="RichTextLabel" parent="Input/Params/InnerMargins/List/MolarMass"]
 layout_mode = 2
 size_flags_horizontal = 3
 bbcode_enabled = true
 text = "[b]Mₐ[/b] - Molar Mass of Air"
 fit_content = true
 
-[node name="Value" type="SpinBox" parent="Content/Input/Params/InnerMargins/List/MolarMass"]
+[node name="Value" type="SpinBox" parent="Input/Params/InnerMargins/List/MolarMass"]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1000.0
@@ -256,17 +255,17 @@ value = 28.935
 alignment = 2
 suffix = "g/mol"
 
-[node name="IsobaricHeatCap" type="HBoxContainer" parent="Content/Input/Params/InnerMargins/List"]
+[node name="IsobaricHeatCap" type="HBoxContainer" parent="Input/Params/InnerMargins/List"]
 layout_mode = 2
 
-[node name="Label" type="RichTextLabel" parent="Content/Input/Params/InnerMargins/List/IsobaricHeatCap"]
+[node name="Label" type="RichTextLabel" parent="Input/Params/InnerMargins/List/IsobaricHeatCap"]
 layout_mode = 2
 size_flags_horizontal = 3
 bbcode_enabled = true
 text = "[b]cₚ[/b] - Isobaric Heat Cap."
 fit_content = true
 
-[node name="Value" type="SpinBox" parent="Content/Input/Params/InnerMargins/List/IsobaricHeatCap"]
+[node name="Value" type="SpinBox" parent="Input/Params/InnerMargins/List/IsobaricHeatCap"]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 10000.0
@@ -275,17 +274,17 @@ value = 1005.0
 alignment = 2
 suffix = "J/K"
 
-[node name="RefPressure" type="HBoxContainer" parent="Content/Input/Params/InnerMargins/List"]
+[node name="RefPressure" type="HBoxContainer" parent="Input/Params/InnerMargins/List"]
 layout_mode = 2
 
-[node name="Label" type="RichTextLabel" parent="Content/Input/Params/InnerMargins/List/RefPressure"]
+[node name="Label" type="RichTextLabel" parent="Input/Params/InnerMargins/List/RefPressure"]
 layout_mode = 2
 size_flags_horizontal = 3
 bbcode_enabled = true
 text = "[b]pₒ[/b] - Surface Pressure"
 fit_content = true
 
-[node name="Value" type="SpinBox" parent="Content/Input/Params/InnerMargins/List/RefPressure"]
+[node name="Value" type="SpinBox" parent="Input/Params/InnerMargins/List/RefPressure"]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1000.0
@@ -294,17 +293,17 @@ value = 101.32
 alignment = 2
 suffix = "kPa"
 
-[node name="TopPressure" type="HBoxContainer" parent="Content/Input/Params/InnerMargins/List"]
+[node name="TopPressure" type="HBoxContainer" parent="Input/Params/InnerMargins/List"]
 layout_mode = 2
 
-[node name="Label" type="RichTextLabel" parent="Content/Input/Params/InnerMargins/List/TopPressure"]
+[node name="Label" type="RichTextLabel" parent="Input/Params/InnerMargins/List/TopPressure"]
 layout_mode = 2
 size_flags_horizontal = 3
 bbcode_enabled = true
 text = "[b]pₜ[/b] - Tropopause Pressure"
 fit_content = true
 
-[node name="Value" type="SpinBox" parent="Content/Input/Params/InnerMargins/List/TopPressure"]
+[node name="Value" type="SpinBox" parent="Input/Params/InnerMargins/List/TopPressure"]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1000.0
@@ -313,7 +312,7 @@ value = 5.0
 alignment = 2
 suffix = "kPa"
 
-[node name="Help" type="Button" parent="Content/Input"]
+[node name="Help" type="Button" parent="Input"]
 layout_mode = 2
 offset_left = 810.0
 offset_right = 860.0
@@ -368,16 +367,16 @@ layout_mode = 2
 bbcode_enabled = true
 text = "this should be filled with text from input_helpertext.bb.txt !"
 
-[connection signal="toggled" from="Content/Ribbon/TLButtons/Expand" to="." method="_on_expand_toggled"]
-[connection signal="toggled" from="Content/Ribbon/TLButtons/Params" to="." method="_on_params_toggled"]
-[connection signal="pressed" from="Content/Ribbon/TLButtons/Reset" to="." method="_on_reset_pressed"]
-[connection signal="pressed" from="Content/Input/Ics/TopBar/PrevCol" to="." method="_on_prev_col_pressed"]
-[connection signal="value_changed" from="Content/Input/Ics/TopBar/ICScroll" to="." method="_on_ic_scroll_value_changed"]
-[connection signal="pressed" from="Content/Input/Ics/TopBar/NextCol" to="." method="_on_next_col_pressed"]
-[connection signal="item_edited" from="Content/Input/Ics/ICEdit" to="." method="_on_ic_edit_item_edited"]
-[connection signal="value_changed" from="Content/Input/Params/InnerMargins/List/Gravity/Value" to="." method="_on_gravity_value_changed"]
-[connection signal="value_changed" from="Content/Input/Params/InnerMargins/List/MolarMass/Value" to="." method="_on_molarMass_value_changed"]
-[connection signal="value_changed" from="Content/Input/Params/InnerMargins/List/IsobaricHeatCap/Value" to="." method="_on_cp_value_changed"]
-[connection signal="value_changed" from="Content/Input/Params/InnerMargins/List/RefPressure/Value" to="." method="_on_Po_value_changed"]
-[connection signal="value_changed" from="Content/Input/Params/InnerMargins/List/TopPressure/Value" to="." method="_on_Pt_value_changed"]
-[connection signal="toggled" from="Content/Input/Help" to="." method="_on_help_toggled"]
+[connection signal="toggled" from="Ribbon/TLButtons/Expand" to="." method="_on_expand_toggled"]
+[connection signal="toggled" from="Ribbon/TLButtons/Params" to="." method="_on_params_toggled"]
+[connection signal="pressed" from="Ribbon/TLButtons/Reset" to="." method="_on_reset_pressed"]
+[connection signal="pressed" from="Input/Ics/TopBar/PrevCol" to="." method="_on_prev_col_pressed"]
+[connection signal="value_changed" from="Input/Ics/TopBar/ICScroll" to="." method="_on_ic_scroll_value_changed"]
+[connection signal="pressed" from="Input/Ics/TopBar/NextCol" to="." method="_on_next_col_pressed"]
+[connection signal="item_edited" from="Input/Ics/ICEdit" to="." method="_on_ic_edit_item_edited"]
+[connection signal="value_changed" from="Input/Params/InnerMargins/List/Gravity/Value" to="." method="_on_gravity_value_changed"]
+[connection signal="value_changed" from="Input/Params/InnerMargins/List/MolarMass/Value" to="." method="_on_molarMass_value_changed"]
+[connection signal="value_changed" from="Input/Params/InnerMargins/List/IsobaricHeatCap/Value" to="." method="_on_cp_value_changed"]
+[connection signal="value_changed" from="Input/Params/InnerMargins/List/RefPressure/Value" to="." method="_on_Po_value_changed"]
+[connection signal="value_changed" from="Input/Params/InnerMargins/List/TopPressure/Value" to="." method="_on_Pt_value_changed"]
+[connection signal="toggled" from="Input/Help" to="." method="_on_help_toggled"]

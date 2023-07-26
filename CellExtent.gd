@@ -86,7 +86,9 @@ func _set_height(p) -> void:
 
 func remesh() -> void:
 	var CylMesher = preload("res://cylindrical_section.gd").new()
-	set_mesh(CylMesher.build_cylindrical_section(sweep, depth, height, 1.0, angle_limit, sides, split))
+	set_mesh(
+		CylMesher.build_cylindrical_section(sweep, depth, height, 1.0, angle_limit, sides, split)
+	)
 
 
 func _ready():

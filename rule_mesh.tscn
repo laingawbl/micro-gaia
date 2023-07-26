@@ -9,8 +9,8 @@ albedo_color = Color(1, 1, 1, 0.247059)
 
 [node name="RuleMesh" type="Node3D"]
 script = ExtResource("1_ghdbs")
-nX = 32
-nR = 4
+nX = 64
+strideR = null
 maxR = 16.0
 scaleR = 0.01
 mat = SubResource("StandardMaterial3D_7yfj3")

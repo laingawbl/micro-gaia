@@ -2,10 +2,12 @@ extends Node
 
 # constants
 
-const nX = 512
+const nX = 256
 const nR = 16
 const R = 8314  # Gas constant
 const UpdateDebounceTime = 0.25
+
+const VertScale = 0.01  # each km is this many worldspace units
 
 var UpdateTimer: Timer  # Debounces recalculations
 var ParamsDidChange: bool = false
@@ -36,10 +38,12 @@ var Rspec: float
 var kappa: float
 var levels: Array = []  # There are 17 of these
 var halfLevels: Array = []  # There are 16 of these
+var MaxZ: float = 15
+var lidRadius: float = 1.15
 
 # simulation data
 
-var StaticStability: Array = []
+var ZLevels: Array = []
 var Exner: Array = []
 
 # signals
@@ -47,16 +51,20 @@ var Exner: Array = []
 signal param_update
 signal ic_update
 
+
 # methods
-
-
-func _init() -> void:
-	ICTemperature.resize(nX)
+func make_to_shape(p: Array, fill = 0.0) -> void:
+	p.resize(nX)
 	for i in range(nX):
 		var row: Array = []
 		row.resize(nR)
 		row.fill(0.0)
-		ICTemperature[i] = row
+		p[i] = row
+
+
+func _init() -> void:
+	make_to_shape(ICTemperature, 290)
+	make_to_shape(ZLevels)
 
 	calc_levels()
 
@@ -139,6 +147,11 @@ func calc_levels():
 		levels[i] = (i * (Po - Pt) / nR)
 		halfLevels[i - 1] = (levels[i] + levels[i - 1]) / 2.0
 
+	Exner.resize(nR)
+	for i in range(nR):
+		var ExnerNonNormed: float = pow(halfLevels[i] / Po, kappa)
+		Exner[i] = kappa * cp * ExnerNonNormed / halfLevels[i] * 1e3
+
 
 func recalc_params():
 	print("Recalculating derived parameters")
@@ -151,6 +164,20 @@ func recalc_params():
 
 func recalc_ref_state():
 	print("Recalculating reference atmosphere")
+
+	var maxZLevelSeen = 0.0
+	for i in range(nX):
+		var sumBuoyancy = 0.0
+		for j in range(nR):
+			var buoyancy = Exner[j] * ICTemperature[i][j] / 1e3
+			sumBuoyancy += (levels[j + 1] - levels[j]) * buoyancy
+			ZLevels[i][j] = sumBuoyancy / g
+
+		if ceil(sumBuoyancy / 1e3 / g) > maxZLevelSeen:
+			maxZLevelSeen = ceil(sumBuoyancy / 1e3 / g)
+
+	MaxZ = maxZLevelSeen
+	lidRadius = 1.0 + MaxZ * VertScale
 	emit_signal("ic_update")
 
 

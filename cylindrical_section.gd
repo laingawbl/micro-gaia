@@ -19,9 +19,14 @@ func _split_vertices(split: float) -> void:
 			vertices.append(b - mid * split)
 
 
-func build_cylindrical_section(sweep: float, depth: float, height: float, 
-	base_radius: float = 1.0, angle_limit: float = 0.1,
-	sides: bool = true, split: float = 0.0
+func build_cylindrical_section(
+	sweep: float,
+	depth: float,
+	height: float,
+	base_radius: float = 1.0,
+	angle_limit: float = 0.1,
+	sides: bool = true,
+	split: float = 0.0
 ) -> ArrayMesh:
 	vertices.clear()
 

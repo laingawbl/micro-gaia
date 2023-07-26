@@ -1,7 +1,7 @@
 extends Control
 
-@onready var tree: Tree = $Content/Input/Ics/ICEdit
-@onready var scroll: HScrollBar = $Content/Input/Ics/TopBar/ICScroll
+@onready var tree: Tree = $Input/Ics/ICEdit
+@onready var scroll: HScrollBar = $Input/Ics/TopBar/ICScroll
 
 const nDispCols = 10
 
@@ -33,7 +33,7 @@ func _get_row_ofs() -> int:
 
 func _set_collapse(p) -> void:
 	collapse = p
-	$Content/Ribbon/TLButtons/Expand.set_pressed_no_signal(p)
+	$Ribbon/TLButtons/Expand.set_pressed_no_signal(p)
 	redo_viz()
 
 
@@ -43,7 +43,7 @@ func _get_collapse() -> bool:
 
 func _set_editing_params(p) -> void:
 	editing_params = p
-	$Content/Ribbon/TLButtons/Params.set_pressed_no_signal(p)
+	$Ribbon/TLButtons/Params.set_pressed_no_signal(p)
 	redo_viz()
 
 
@@ -53,19 +53,19 @@ func _get_editing_params() -> bool:
 
 func redo_viz():
 	if collapse:
-		$Content/Input.visible = false
-		$Content/Ribbon/TLButtons/Expand.self_modulate = Color(Color.WHITE, 0.5)
+		$Input.visible = false
+		$Ribbon/TLButtons/Expand.self_modulate = Color(Color.WHITE, 0.5)
 	else:
-		$Content/Input.visible = true
-		$Content/Ribbon/TLButtons/Expand.self_modulate = Color.WHITE
+		$Input.visible = true
+		$Ribbon/TLButtons/Expand.self_modulate = Color.WHITE
 
 	if editing_params:
-		$Content/Ribbon/TLButtons/Params.self_modulate = Color.WHITE
+		$Ribbon/TLButtons/Params.self_modulate = Color.WHITE
 	else:
-		$Content/Ribbon/TLButtons/Params.self_modulate = Color(Color.WHITE, 0.5)
+		$Ribbon/TLButtons/Params.self_modulate = Color(Color.WHITE, 0.5)
 
-	$Content/Input/Ics.visible = not editing_params
-	$Content/Input/Params.visible = editing_params
+	$Input/Ics.visible = not editing_params
+	$Input/Params.visible = editing_params
 
 
 func layout():
@@ -204,8 +204,8 @@ func _on_reset_pressed():
 
 
 func params_did_update():
-	$Content/Input/Params/InnerMargins/List/Gravity/Value.set_value_no_signal(SimData.g)
-	$Content/Input/Params/InnerMargins/List/MolarMass/Value.set_value_no_signal(SimData.mm)
-	$Content/Input/Params/InnerMargins/List/IsobaricHeatCap/Value.set_value_no_signal(SimData.cp)
-	$Content/Input/Params/InnerMargins/List/RefPressure/Value.set_value_no_signal(SimData.Po / 1e3)
-	$Content/Input/Params/InnerMargins/List/TopPressure/Value.set_value_no_signal(SimData.Pt / 1e3)
+	$Input/Params/InnerMargins/List/Gravity/Value.set_value_no_signal(SimData.g)
+	$Input/Params/InnerMargins/List/MolarMass/Value.set_value_no_signal(SimData.mm)
+	$Input/Params/InnerMargins/List/IsobaricHeatCap/Value.set_value_no_signal(SimData.cp)
+	$Input/Params/InnerMargins/List/RefPressure/Value.set_value_no_signal(SimData.Po / 1e3)
+	$Input/Params/InnerMargins/List/TopPressure/Value.set_value_no_signal(SimData.Pt / 1e3)
