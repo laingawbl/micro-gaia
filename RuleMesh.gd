@@ -21,8 +21,14 @@ const angleLimit = 0.035
 	get = _get_scaleR
 
 @export var mat: Material
+@export var hlMat: Material
+
+@export var hlRow: int = -1:
+	set = _set_hlRow,
+	get = _get_hlRow
 
 var rows: Array = []
+var rowLevels: Array = []
 
 
 func _set_nX(p) -> void:
@@ -65,8 +71,30 @@ func _get_scaleR() -> float:
 	return scaleR
 
 
+func _set_hlRow(p) -> void:
+	if hlRow != -1 and hlRow < len(rows):
+		rows[hlRow].multimesh.mesh.surface_set_material(0, mat)
+	if p >= 0 and p < len(rows):
+		hlRow = p
+		rows[hlRow].multimesh.mesh.surface_set_material(0, hlMat)
+	else:
+		hlRow = -1
+
+
+func _get_hlRow() -> int:
+	return hlRow
+
+
 func remesh() -> void:
-	var nR = floor(maxR / strideR)
+	var nR = ceil(maxR / strideR)
+	var worldSpaceExtent = maxR * scaleR
+	var topOfRegularMeshes = (nR - 1) * strideR * scaleR
+	var rowHeight = float(topOfRegularMeshes) / float(nR - 1)
+	var topRowHt = worldSpaceExtent - topOfRegularMeshes
+
+	var omitTopRow: bool = topRowHt < 1e-3
+	if omitTopRow:
+		nR -= 1
 
 	if get_child_count() != nR:
 		# one MultiMeshInstance3D per vertical "row".
@@ -82,16 +110,18 @@ func remesh() -> void:
 			rows.append(row)
 			add_child.call_deferred(row)
 
+	rowLevels = []
+
+	# Do the regular meshes
+
 	var sweep = PI / nX
-	var worldSpaceExtent = nR * strideR * scaleR
-	var rowHeight = float(worldSpaceExtent) / float(nR)
 	var CylMesher = preload("res://cylindrical_section.gd").new()
 
-	for k in range(nR - 1):
+	for k in range(nR if omitTopRow else nR - 1):
 		var row: MultiMeshInstance3D = rows[k]
 		var mm = row.multimesh
-
 		var baseHeight = 1.0 + rowHeight * k
+
 		var cell_mesh = (
 			CylMesher
 			. build_cylindrical_section(
@@ -107,23 +137,30 @@ func remesh() -> void:
 			var tf = Transform3D(rot, Vector3.ZERO)
 			mm.set_instance_transform(i, tf)
 
-	var top_row: MultiMeshInstance3D = rows[nR - 1]
-	var top_mm = top_row.multimesh
-	var top_row_ht = maxR * scaleR - worldSpaceExtent
-	var cell_mesh = (
-		CylMesher
-		. build_cylindrical_section(
-			sweep, depth, top_row_ht, 1.0 + worldSpaceExtent, angleLimit, true, split
-		)
-	)
+		rowLevels.append(baseHeight)
 
-	top_mm.mesh = cell_mesh
-	top_mm.mesh.surface_set_material(0, mat)
-	top_mm.instance_count = nX
-	for i in range(nX):
-		var rot = Basis(Vector3.FORWARD, i * PI / nX)
-		var tf = Transform3D(rot, Vector3.ZERO)
-		top_mm.set_instance_transform(i, tf)
+	# Do the last, possibly truncated mesh
+	if !omitTopRow:
+		var top_row: MultiMeshInstance3D = rows[nR - 1]
+		var top_mm = top_row.multimesh
+
+		var cell_mesh = (
+			CylMesher
+			. build_cylindrical_section(
+				sweep, depth, topRowHt, 1.0 + topOfRegularMeshes, angleLimit, true, split
+			)
+		)
+
+		top_mm.mesh = cell_mesh
+		top_mm.mesh.surface_set_material(0, mat)
+		top_mm.instance_count = nX
+		for i in range(nX):
+			var rot = Basis(Vector3.FORWARD, i * PI / nX)
+			var tf = Transform3D(rot, Vector3.ZERO)
+			top_mm.set_instance_transform(i, tf)
+
+		rowLevels.append(1.0 + topOfRegularMeshes)
+		rowLevels.append(1.0 + worldSpaceExtent)
 
 
 func _enter_tree():

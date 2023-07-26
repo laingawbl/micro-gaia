@@ -38,7 +38,7 @@ points = PackedVector3Array(-0.0123336, -0.05, -1, -0.0246672, -0.05, -0.999804,
 script = ExtResource("1_w1nqv")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.721134, 0.318802, -0.615086, 0, 0.887832, 0.460167, 0.692795, -0.331843, 0.640246, -0.100052, 1.09861, 0.26726)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.304229, 1.01578, 0.26726)
 script = ExtResource("2_x8e6k")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -56,11 +56,15 @@ mesh = SubResource("CylinderMesh_hcn1l")
 transform = Transform3D(1.2, 0, 0, 0, -5.24537e-08, -1.2, 0, 1.2, -5.24537e-08, 0, 0, -0.05)
 shape = SubResource("ConvexPolygonShape3D_mk2er")
 
-[node name="RuleMesh" parent="." instance=ExtResource("2_gfhr4")]
-strideR = 4
-maxR = 18.0
+[node name="CoordinateMeshes" type="Node3D" parent="."]
 
-[node name="RuleMeshLabel" type="Label3D" parent="."]
+[node name="RuleMesh" parent="CoordinateMeshes" instance=ExtResource("2_gfhr4")]
+maxR = 18.0
+hlRow = -1
+
+[node name="LevelMeshes" type="Node3D" parent="CoordinateMeshes"]
+
+[node name="RuleMeshLabel" type="Label3D" parent="CoordinateMeshes"]
 pixel_size = 0.001
 billboard = 1
 double_sided = false

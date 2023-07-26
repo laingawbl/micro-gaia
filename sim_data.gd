@@ -78,7 +78,7 @@ func _enter_tree():
 
 
 func _set_g(p) -> void:
-	g = clamp(p, 0.01, 20.0)
+	g = clamp(p, 1.0, 20.0)
 	ParamsDidChange = true
 	UpdateTimer.start(UpdateDebounceTime)
 
@@ -154,7 +154,6 @@ func calc_levels():
 
 
 func recalc_params():
-	print("Recalculating derived parameters")
 	Rspec = R / mm
 	kappa = Rspec / cp
 	calc_levels()
@@ -163,8 +162,6 @@ func recalc_params():
 
 
 func recalc_ref_state():
-	print("Recalculating reference atmosphere")
-
 	var maxZLevelSeen = 0.0
 	for i in range(nX):
 		var sumBuoyancy = 0.0
