@@ -1,11 +1,12 @@
-[gd_scene load_steps=9 format=3 uid="uid://d2pc0u38e2pm7"]
+[gd_scene load_steps=10 format=3 uid="uid://d2pc0u38e2pm7"]
 
 [ext_resource type="Script" path="res://world.gd" id="1_w1nqv"]
 [ext_resource type="PackedScene" uid="uid://bao8qvqq5xyp3" path="res://rule_mesh.tscn" id="2_gfhr4"]
+[ext_resource type="Script" path="res://RotatingCam.gd" id="2_x8e6k"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_241in"]
-sky_top_color = Color(1, 0.956119, 0.93325, 1)
-sky_horizon_color = Color(1, 0.956863, 0.933333, 1)
+sky_top_color = Color(0.184314, 0.309804, 0.309804, 1)
+sky_horizon_color = Color(0.184314, 0.309804, 0.309804, 1)
 sky_curve = 1e-05
 ground_bottom_color = Color(0.0196078, 0.145098, 0.2, 1)
 ground_curve = 1e-05
@@ -38,6 +39,7 @@ script = ExtResource("1_w1nqv")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(0.721134, 0.318802, -0.615086, 0, 0.887832, 0.460167, 0.692795, -0.331843, 0.640246, -0.100052, 1.09861, 0.26726)
+script = ExtResource("2_x8e6k")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_djeow")
@@ -55,6 +57,7 @@ transform = Transform3D(1.2, 0, 0, 0, -5.24537e-08, -1.2, 0, 1.2, -5.24537e-08, 
 shape = SubResource("ConvexPolygonShape3D_mk2er")
 
 [node name="RuleMesh" parent="." instance=ExtResource("2_gfhr4")]
+strideR = 4
 maxR = 18.0
 
 [node name="RuleMeshLabel" type="Label3D" parent="."]
