@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://bao8qvqq5xyp3"]
+
+[ext_resource type="Script" path="res://RuleMesh.gd" id="1_ghdbs"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7yfj3"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 0.247059)
+
+[node name="RuleMesh" type="Node3D"]
+script = ExtResource("1_ghdbs")
+nX = 32
+nR = 4
+maxR = 16.0
+scaleR = 0.01
+mat = SubResource("StandardMaterial3D_7yfj3")

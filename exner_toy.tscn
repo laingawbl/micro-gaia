@@ -22,4 +22,4 @@ tooltip_text = "Toggle Details"
 icon = ExtResource("2_4peeq")
 flat = true
 
-[node name="Node3D" parent="." instance=ExtResource("4_k2ohx")]
+[node name="World" parent="." instance=ExtResource("4_k2ohx")]

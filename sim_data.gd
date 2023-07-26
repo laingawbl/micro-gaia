@@ -57,7 +57,7 @@ func _init() -> void:
 		row.resize(nR)
 		row.fill(0.0)
 		ICTemperature[i] = row
-		
+
 	calc_levels()
 
 	UpdateTimer = Timer.new()
@@ -130,13 +130,14 @@ func _process(_delta):
 			recalc_ref_state()
 			IcsDidChange = false
 
+
 func calc_levels():
-	levels.resize(nR+1)
+	levels.resize(nR + 1)
 	halfLevels.resize(nR)
 	levels[0] = Pt
-	for i in range(1, nR+1):
+	for i in range(1, nR + 1):
 		levels[i] = (i * (Po - Pt) / nR)
-		halfLevels[i-1] = (levels[i] + levels[i-1]) / 2.0
+		halfLevels[i - 1] = (levels[i] + levels[i - 1]) / 2.0
 
 
 func recalc_params():

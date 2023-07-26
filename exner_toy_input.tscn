@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://do00q4yudkr2k"]
+[gd_scene load_steps=20 format=3 uid="uid://do00q4yudkr2k"]
 
 [ext_resource type="Script" path="res://exner_toy_input.gd" id="1_6ut57"]
 [ext_resource type="Texture2D" uid="uid://rbgdjkd3owar" path="res://icons/menu_FILL0_wght400_GRAD200_opsz48.svg" id="2_20rtm"]
@@ -11,6 +11,48 @@
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gdxvs"]
 bg_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rb53x"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_edkig"]
+bg_color = Color(0.675291, 0.843531, 0.842241, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1erxq"]
+bg_color = Color(0.675291, 0.843531, 0.842241, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3hgmh"]
+bg_color = Color(0, 0, 0, 0.498039)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5hyw3"]
+bg_color = Color(0, 0, 0, 0.741176)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8lm0w"]
+bg_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_glnwc"]
 bg_color = Color(1, 1, 1, 1)
@@ -118,12 +160,20 @@ layout_mode = 2
 [node name="PrevCol" type="Button" parent="Content/Input/Ics/TopBar"]
 layout_mode = 2
 size_flags_horizontal = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_rb53x")
+theme_override_styles/hover = SubResource("StyleBoxFlat_edkig")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_edkig")
 icon = ExtResource("5_j80fp")
 
 [node name="ICScroll" type="HScrollBar" parent="Content/Input/Ics/TopBar"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_styles/scroll = SubResource("StyleBoxFlat_rb53x")
+theme_override_styles/scroll_focus = SubResource("StyleBoxFlat_1erxq")
+theme_override_styles/grabber = SubResource("StyleBoxFlat_3hgmh")
+theme_override_styles/grabber_highlight = SubResource("StyleBoxFlat_5hyw3")
+theme_override_styles/grabber_pressed = SubResource("StyleBoxFlat_8lm0w")
 max_value = 512.0
 step = 1.0
 page = 7.0
@@ -131,6 +181,9 @@ page = 7.0
 [node name="NextCol" type="Button" parent="Content/Input/Ics/TopBar"]
 layout_mode = 2
 size_flags_horizontal = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_rb53x")
+theme_override_styles/hover = SubResource("StyleBoxFlat_edkig")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_edkig")
 icon = ExtResource("6_ajhtr")
 
 [node name="ICEdit" type="Tree" parent="Content/Input/Ics"]
@@ -142,11 +195,11 @@ hide_root = true
 select_mode = 2
 
 [node name="Params" type="Panel" parent="Content/Input"]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = 40.0
 offset_right = -400.0
 grow_horizontal = 2
 grow_vertical = 2
