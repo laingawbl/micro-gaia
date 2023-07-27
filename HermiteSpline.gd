@@ -3,11 +3,7 @@ extends MeshInstance3D
 
 var processed_once: bool = false
 
-enum TangentType {
-	CATMULL_ROM,
-	CARDINAL,
-	FINITE_DIFFERENCE
-}
+enum TangentType { CATMULL_ROM, CARDINAL, FINITE_DIFFERENCE }
 
 @export var SegCount: int = 4:
 	set = _set_SegCount,
@@ -25,6 +21,12 @@ enum TangentType {
 @export var SplineTangentType: TangentType = TangentType.CATMULL_ROM:
 	set = _set_SplineTangentType,
 	get = _get_SplineTangentType
+@export var UseVertexColours: bool = false:
+	set = _set_UseVertexColours,
+	get = _get_UseVertexColours
+@export var VertexColours: Gradient:
+	set = _set_VertexColours,
+	get = _get_VertexColours
 
 
 func _set_SegCount(p) -> void:
@@ -77,6 +79,29 @@ func _get_SplineMat() -> Material:
 	return SplineMat
 
 
+func _set_UseVertexColours(p) -> void:
+	UseVertexColours = p
+	if SplineMat is StandardMaterial3D:
+		SplineMat.vertex_color_use_as_albedo = UseVertexColours
+		mesh.surface_set_material(0, SplineMat)
+	if processed_once and UseVertexColours and VertexColours != null:
+		remesh()
+
+
+func _get_UseVertexColours() -> bool:
+	return UseVertexColours
+
+
+func _set_VertexColours(p) -> void:
+	VertexColours = p
+	if processed_once and UseVertexColours:
+		remesh()
+
+
+func _get_VertexColours() -> Gradient:
+	return VertexColours
+
+
 func hermite(p1: float, p2: float, v1: float, v2: float, t: float) -> float:
 	var t2 = t * t
 	var t3 = t * t * t
@@ -95,6 +120,7 @@ func final_tangent() -> Vector3:
 	var lp = len(Points)
 	return Points[lp - 2].direction_to(Points[lp - 1])
 
+
 func tangent(prev: Vector3, curr: Vector3, next: Vector3) -> Vector3:
 	match SplineTangentType:
 		TangentType.CATMULL_ROM:
@@ -109,6 +135,7 @@ func tangent(prev: Vector3, curr: Vector3, next: Vector3) -> Vector3:
 		_:
 			return Vector3.ZERO
 
+
 func remesh():
 	if len(Points) < 2:
 		mesh = ArrayMesh.new()
@@ -117,9 +144,19 @@ func remesh():
 	var vertices: Array[Vector3] = []
 	var prev_tangent: Vector3 = initial_tangent()
 
+	var total_arc: float = 0.0
+	var arc: float = 0.0
+	var vert_cols: Array[Color] = []
+	var canUseVC: bool = UseVertexColours and VertexColours
+	if canUseVC:
+		# first, we need total arc length to do uniform vertex colouring
+		for n in range(1, len(Points)):
+			total_arc += Points[n - 1].distance_to(Points[n])
+
 	for n in range(1, len(Points)):
 		var prev: Vector3 = Points[n - 1]
 		var curr: Vector3 = Points[n]
+		var this_interval: float = prev.distance_to(curr)
 
 		# calculate the tangent at `curr`
 		var curr_tangent: Vector3
@@ -129,24 +166,43 @@ func remesh():
 			var next: Vector3 = Points[n + 1]
 			curr_tangent = tangent(prev, curr, next)
 
+		# add vertices along interval
 		vertices.append(prev)
+		if canUseVC:
+			var col = VertexColours.sample(arc / total_arc)
+			vert_cols.append(col)
+
 		for k in range(1, SegCount):
 			var t = float(k) / SegCount
 			var xt = hermite(prev.x, curr.x, prev_tangent.x, curr_tangent.x, t)
 			var yt = hermite(prev.y, curr.y, prev_tangent.y, curr_tangent.y, t)
 			var zt = hermite(prev.z, curr.z, prev_tangent.z, curr_tangent.z, t)
-			var vert = Vector3(xt, yt, zt)
+			var seg_next = Vector3(xt, yt, zt)
 
-			vertices.append(vert)
-			vertices.append(vert)
+			vertices.append(seg_next)
+			vertices.append(seg_next)
+
+			if canUseVC:
+				var col = VertexColours.sample((arc + this_interval * t) / total_arc)
+				vert_cols.append(col)
+				vert_cols.append(col)
 
 		vertices.append(curr)
 		prev_tangent = curr_tangent
 
+		arc += this_interval
+		if canUseVC:
+			var col = VertexColours.sample(arc / total_arc)
+			vert_cols.append(col)
+
 	var surf = SurfaceTool.new()
 	surf.begin(Mesh.PRIMITIVE_LINES)
-	for v in vertices:
-		surf.add_vertex(v)
+
+	for k in range(len(vertices)):
+		if canUseVC:
+			surf.set_color(vert_cols[k])
+		surf.add_vertex(vertices[k])
+
 	surf.index()
 	mesh = surf.commit()
 	mesh.surface_set_material(0, SplineMat)
