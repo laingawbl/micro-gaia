@@ -5,7 +5,7 @@
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_imcby"]
 shading_mode = 0
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_elu2c"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_niw2u"]
 _surfaces = [{
 "aabb": AABB(-0.1875, -0.1875, -0.110779, 1.375, 1.375, 1.11078),
 "format": 4097,
@@ -18,7 +18,7 @@ _surfaces = [{
 }]
 
 [node name="BezierPath" type="MeshInstance3D"]
-mesh = SubResource("ArrayMesh_elu2c")
+mesh = SubResource("ArrayMesh_niw2u")
 script = ExtResource("1_1icpq")
 SegCount = 16
 Points = Array[Vector3]([Vector3(0, 1, 0), Vector3(1, 1, 0), Vector3(1, 0, 0), Vector3(0, 0, 0), Vector3(0, 1, 1)])
