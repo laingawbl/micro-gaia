@@ -1,7 +1,7 @@
 @tool
 extends MeshInstance3D
 
-var processed_once: bool = false
+signal changed
 
 enum TangentType { CATMULL_ROM, CARDINAL, FINITE_DIFFERENCE }
 
@@ -11,7 +11,6 @@ enum TangentType { CATMULL_ROM, CARDINAL, FINITE_DIFFERENCE }
 @export var SplineTension: float = 0:
 	set = _set_SplineTension,
 	get = _get_SplineTension
-
 @export var Points: Array[Vector3]:
 	set = _set_Points,
 	get = _get_Points
@@ -21,6 +20,13 @@ enum TangentType { CATMULL_ROM, CARDINAL, FINITE_DIFFERENCE }
 @export var SplineTangentType: TangentType = TangentType.CATMULL_ROM:
 	set = _set_SplineTangentType,
 	get = _get_SplineTangentType
+@export var SplineStartHandle: Vector3 = Vector3.ZERO:
+	set = _set_SplineStartHandle,
+	get = _get_SplineStartHandle
+@export var SplineEndHandle: Vector3 = Vector3.ZERO:
+	set = _set_SplineEndHandle,
+	get = _get_SplineEndHandle
+
 @export var UseVertexColours: bool = false:
 	set = _set_UseVertexColours,
 	get = _get_UseVertexColours
@@ -30,6 +36,16 @@ enum TangentType { CATMULL_ROM, CARDINAL, FINITE_DIFFERENCE }
 @export var VertexColours: Gradient:
 	set = _set_VertexColours,
 	get = _get_VertexColours
+@export var ShowUniformPoints: bool = false:
+	set = _set_ShowUniformPoints,
+	get = _get_ShowUniformPoints
+@export var UniformPointSpacing: float = 1.0:
+	set = _set_UniformPointSpacing,
+	get = _get_UniformPointSpacing
+
+var _vert_list: Array[Vector3] = []
+var _normal_list: Array[Vector3] = []
+var processed_once: bool = false
 
 
 func _set_SegCount(p) -> void:
@@ -115,6 +131,49 @@ func _get_VertexColours() -> Gradient:
 	return VertexColours
 
 
+func _set_ShowUniformPoints(p) -> void:
+	ShowUniformPoints = p
+	if processed_once:
+		remesh()
+
+
+func _get_ShowUniformPoints() -> bool:
+	return ShowUniformPoints
+
+
+func _set_UniformPointSpacing(p) -> void:
+	UniformPointSpacing = max(0.0, p)
+	if processed_once:
+		remesh()
+
+
+func _get_UniformPointSpacing() -> float:
+	return UniformPointSpacing
+
+
+func _set_SplineStartHandle(p) -> void:
+	SplineStartHandle = p
+	if processed_once:
+		remesh()
+
+
+func _get_SplineStartHandle() -> Vector3:
+	return SplineStartHandle
+
+
+func _set_SplineEndHandle(p) -> void:
+	SplineEndHandle = p
+	if processed_once:
+		remesh()
+
+
+func _get_SplineEndHandle() -> Vector3:
+	return SplineEndHandle
+
+
+# METHODS #
+
+
 func hermite(p1: float, p2: float, v1: float, v2: float, t: float) -> float:
 	var t2 = t * t
 	var t3 = t * t * t
@@ -126,10 +185,14 @@ func hermite(p1: float, p2: float, v1: float, v2: float, t: float) -> float:
 
 
 func initial_tangent() -> Vector3:
+	if SplineStartHandle != Vector3.ZERO:
+		return SplineStartHandle
 	return Points[0].direction_to(Points[1])
 
 
 func final_tangent() -> Vector3:
+	if SplineEndHandle != Vector3.ZERO:
+		return SplineEndHandle
 	var lp = len(Points)
 	return Points[lp - 2].direction_to(Points[lp - 1])
 
@@ -154,6 +217,7 @@ func remesh():
 		mesh = ArrayMesh.new()
 		return
 
+	_vert_list = []
 	var vertices: Array[Vector3] = []
 	var uvs: Array[Vector2] = []
 	var prev_tangent: Vector3 = initial_tangent()
@@ -189,6 +253,7 @@ func remesh():
 
 		# add vertices along interval
 		vertices.append(prev)
+		_vert_list.append(prev)
 		uvs.append(Vector2(arc / total_arc, 0))
 		if canUseVC:
 			var col = VertexColours.sample(arc / total_arc)
@@ -203,6 +268,7 @@ func remesh():
 
 			vertices.append(seg_next)
 			vertices.append(seg_next)
+			_vert_list.append(seg_next)
 
 			var seg_uv = (arc + this_interval * t) / total_arc
 			uvs.append(Vector2(seg_uv, 0))
@@ -221,6 +287,10 @@ func remesh():
 			var col = VertexColours.sample(arc / total_arc)
 			vert_cols.append(col)
 
+	_vert_list.append(Points[len(Points) - 1])
+
+	# finally, build the surf from the arrays
+
 	var surf = SurfaceTool.new()
 	surf.begin(Mesh.PRIMITIVE_LINES)
 
@@ -233,6 +303,116 @@ func remesh():
 	surf.index()
 	mesh = surf.commit()
 	mesh.surface_set_material(0, SplineMat)
+
+	# calculate normals for each vertex
+	_normal_list = []
+	_normal_list.append(Vector3.FORWARD)
+	for k in range(1, len(_vert_list) - 1):
+		var a: Vector3 = _vert_list[k - 1]
+		var b: Vector3 = _vert_list[k]
+		var c: Vector3 = _vert_list[k + 1]
+		var d1 = a.direction_to(b)
+		var d2 = b.direction_to(c)
+		_normal_list.append((d1 - d2).normalized())
+
+	# copy normals to endpoints
+	var first_normal = _normal_list[1]
+	var last_normal = _normal_list[len(_normal_list) - 1]
+	_normal_list[0] = first_normal
+	_normal_list.append(last_normal)
+
+	if ShowUniformPoints:
+		debug_draw_uniform_points()
+
+	emit_signal("changed")
+
+
+# Get uniform points along the spline every `spacing` units. `ofs` controls the
+# offset or phase from 0 to 1 (in units of spacing, i.e., ofs=0.5 means the
+# first point will be (0.5*spacing) units from the start).
+# Beware that the arc length is calculated along straight-line elements, and so
+# is only an approximation, which improves as SegCount increases.
+func get_uniform_points(spacing: float, ofs: float = 0.5) -> Array[Vector3]:
+	if len(_vert_list) < 2:
+		return []
+
+	var arc: float = 0.0
+	var nextPoint: float = clamp(ofs, 0.0, 1.0) * spacing
+	var points: Array[Vector3] = []
+	for k in range(1, len(_vert_list)):
+		var a = _vert_list[k - 1]
+		var b = _vert_list[k]
+		var segLen = a.distance_to(b)
+		while arc + segLen > nextPoint:
+			var t = nextPoint - arc
+			var dir = a.direction_to(b)
+			var newPt: Vector3 = a + dir * t
+			points.append(newPt)
+			nextPoint += spacing
+
+		arc += segLen
+
+	return points
+
+
+func get_uniform_normals(spacing: float, ofs: float = 0.5) -> Array[Vector3]:
+	if len(_vert_list) < 2:
+		return []
+
+	var arc: float = 0.0
+	var nextPoint: float = clamp(ofs, 0.0, 1.0) * spacing
+	var points: Array[Vector3] = []
+	for k in range(1, len(_vert_list)):
+		var a = _vert_list[k - 1]
+		var b = _vert_list[k]
+		var nA: Vector3 = _normal_list[k - 1]
+		var nB: Vector3 = _normal_list[k - 2]
+		var segLen = a.distance_to(b)
+		while arc + segLen > nextPoint:
+			var t = (nextPoint - arc) / segLen
+			var newNorm: Vector3 = nB.slerp(nA, t)
+			points.append(newNorm.normalized())
+			nextPoint += spacing
+
+		arc += segLen
+
+	return points
+
+
+func get_arc_length() -> float:
+	if len(_vert_list) < 2:
+		return 0.0
+
+	var arc: float = 0.0
+	for k in range(1, len(_vert_list)):
+		var a = _vert_list[k - 1]
+		var b = _vert_list[k]
+		arc += a.distance_to(b)
+	return arc
+
+
+func get_spline_vertices() -> Array[Vector3]:
+	return _vert_list
+
+
+func get_spline_normals() -> Array[Vector3]:
+	return _normal_list
+
+
+func debug_draw_uniform_points() -> void:
+	var pts = get_uniform_points(UniformPointSpacing, 0.5)
+
+	var surf = SurfaceTool.new()
+	surf.begin(Mesh.PRIMITIVE_POINTS)
+
+	for p in pts:
+		surf.add_vertex(p)
+	surf.index()
+	surf.commit(mesh)
+	mesh.surface_set_material(1, _debug_mat)
+
+
+@export var _debug_mat: Material
 
 
 func _enter_tree():
