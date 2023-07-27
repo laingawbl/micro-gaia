@@ -16,7 +16,7 @@ func on_ics_changed():
 
 
 func _on_area_3d_input_event(
-	_camera, event: InputEvent, input_position: Vector3, _normal, _shape_idx
+	camera: Camera3D, event: InputEvent, input_position: Vector3, _normal, _shape_idx
 ):
 	RuleMeshLabel.position = input_position
 	var inputRad = input_position.length()
@@ -29,6 +29,7 @@ func _on_area_3d_input_event(
 			String.num(clamp(inputZ, 0.0, SimData.MaxZ), 1).pad_decimals(1) + " km"
 		)
 
+	# find out which vertical rule level is highlighted
 	var rowLevels = RuleMesh.rowLevels
 	var foundLevel = -1
 	for k in range(len(rowLevels)):
