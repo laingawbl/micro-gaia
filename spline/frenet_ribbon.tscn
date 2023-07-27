@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://ccumxx5t7tnga"]
 
-[ext_resource type="Script" path="res://FrenetRibbon.gd" id="1_usb5i"]
+[ext_resource type="Script" path="res://spline/FrenetRibbon.gd" id="1_usb5i"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_o53n2"]
 cull_mode = 2

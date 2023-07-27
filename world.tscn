@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://d2pc0u38e2pm7"]
 
 [ext_resource type="Script" path="res://world.gd" id="1_w1nqv"]
-[ext_resource type="PackedScene" uid="uid://bao8qvqq5xyp3" path="res://rule_mesh.tscn" id="2_gfhr4"]
+[ext_resource type="PackedScene" uid="uid://bao8qvqq5xyp3" path="res://rect_geom/rule_mesh.tscn" id="2_gfhr4"]
 [ext_resource type="Script" path="res://RotatingCam.gd" id="2_x8e6k"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_241in"]

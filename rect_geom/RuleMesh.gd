@@ -115,7 +115,7 @@ func remesh() -> void:
 	# Do the regular meshes
 
 	var sweep = PI / nX
-	var CylMesher = preload("res://cylindrical_section.gd").new()
+	var CylMesher = preload("res://rect_geom/cylindrical_section.gd").new()
 
 	for k in range(nR if omitTopRow else nR - 1):
 		var row: MultiMeshInstance3D = rows[k]

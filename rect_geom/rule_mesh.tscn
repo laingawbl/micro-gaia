@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bao8qvqq5xyp3"]
 
-[ext_resource type="Script" path="res://RuleMesh.gd" id="1_ghdbs"]
+[ext_resource type="Script" path="res://rect_geom/RuleMesh.gd" id="1_ghdbs"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7yfj3"]
 transparency = 1

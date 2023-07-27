@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://hijrwl2comto"]
 
-[ext_resource type="Script" path="res://CellExtent.gd" id="1_3s6jh"]
+[ext_resource type="Script" path="res://rect_geom/CellExtent.gd" id="1_3s6jh"]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_jdysp"]
 _surfaces = [{
