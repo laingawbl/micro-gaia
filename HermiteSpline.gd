@@ -24,6 +24,9 @@ enum TangentType { CATMULL_ROM, CARDINAL, FINITE_DIFFERENCE }
 @export var UseVertexColours: bool = false:
 	set = _set_UseVertexColours,
 	get = _get_UseVertexColours
+@export var UniformUVSampling: bool = false:
+	set = _set_UniformUVSampling,
+	get = _get_UniformUVSampling
 @export var VertexColours: Gradient:
 	set = _set_VertexColours,
 	get = _get_VertexColours
@@ -92,6 +95,16 @@ func _get_UseVertexColours() -> bool:
 	return UseVertexColours
 
 
+func _set_UniformUVSampling(p) -> void:
+	UniformUVSampling = p
+	if processed_once:
+		remesh()
+
+
+func _get_UniformUVSampling() -> bool:
+	return UniformUVSampling
+
+
 func _set_VertexColours(p) -> void:
 	VertexColours = p
 	if processed_once and UseVertexColours:
@@ -142,6 +155,7 @@ func remesh():
 		return
 
 	var vertices: Array[Vector3] = []
+	var uvs: Array[Vector2] = []
 	var prev_tangent: Vector3 = initial_tangent()
 
 	var total_arc: float = 0.0
@@ -150,13 +164,20 @@ func remesh():
 	var canUseVC: bool = UseVertexColours and VertexColours
 	if canUseVC:
 		# first, we need total arc length to do uniform vertex colouring
-		for n in range(1, len(Points)):
-			total_arc += Points[n - 1].distance_to(Points[n])
+		if UniformUVSampling:
+			total_arc = len(Points) - 1.0
+		else:
+			for n in range(1, len(Points)):
+				total_arc += Points[n - 1].distance_to(Points[n])
 
 	for n in range(1, len(Points)):
 		var prev: Vector3 = Points[n - 1]
 		var curr: Vector3 = Points[n]
-		var this_interval: float = prev.distance_to(curr)
+		var this_interval: float
+		if UniformUVSampling:
+			this_interval = 1.0
+		else:
+			this_interval = prev.distance_to(curr)
 
 		# calculate the tangent at `curr`
 		var curr_tangent: Vector3
@@ -168,6 +189,7 @@ func remesh():
 
 		# add vertices along interval
 		vertices.append(prev)
+		uvs.append(Vector2(arc / total_arc, 0))
 		if canUseVC:
 			var col = VertexColours.sample(arc / total_arc)
 			vert_cols.append(col)
@@ -182,8 +204,11 @@ func remesh():
 			vertices.append(seg_next)
 			vertices.append(seg_next)
 
+			var seg_uv = (arc + this_interval * t) / total_arc
+			uvs.append(Vector2(seg_uv, 0))
+			uvs.append(Vector2(seg_uv, 0))
 			if canUseVC:
-				var col = VertexColours.sample((arc + this_interval * t) / total_arc)
+				var col = VertexColours.sample(seg_uv)
 				vert_cols.append(col)
 				vert_cols.append(col)
 
@@ -191,6 +216,7 @@ func remesh():
 		prev_tangent = curr_tangent
 
 		arc += this_interval
+		uvs.append(Vector2(arc / total_arc, 0))
 		if canUseVC:
 			var col = VertexColours.sample(arc / total_arc)
 			vert_cols.append(col)
@@ -199,6 +225,7 @@ func remesh():
 	surf.begin(Mesh.PRIMITIVE_LINES)
 
 	for k in range(len(vertices)):
+		surf.set_uv(uvs[k])
 		if canUseVC:
 			surf.set_color(vert_cols[k])
 		surf.add_vertex(vertices[k])
