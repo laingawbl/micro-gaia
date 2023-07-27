@@ -1,11 +1,11 @@
 [gd_scene load_steps=4 format=3 uid="uid://cpsjgpqgtxues"]
 
-[ext_resource type="Script" path="res://BezierPath.gd" id="1_1icpq"]
+[ext_resource type="Script" path="res://spline/BezierPath.gd" id="1_1icpq"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_imcby"]
 shading_mode = 0
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_niw2u"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_3w0rk"]
 _surfaces = [{
 "aabb": AABB(-0.1875, -0.1875, -0.110779, 1.375, 1.375, 1.11078),
 "format": 4097,
@@ -18,7 +18,7 @@ _surfaces = [{
 }]
 
 [node name="BezierPath" type="MeshInstance3D"]
-mesh = SubResource("ArrayMesh_niw2u")
+mesh = SubResource("ArrayMesh_3w0rk")
 script = ExtResource("1_1icpq")
 SegCount = 16
 Points = Array[Vector3]([Vector3(0, 1, 0), Vector3(1, 1, 0), Vector3(1, 0, 0), Vector3(0, 0, 0), Vector3(0, 1, 1)])

@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://bb0bdrnacilma"]
 
-[ext_resource type="Script" path="res://LabelTest.gd" id="1_47hqr"]
-[ext_resource type="PackedScene" uid="uid://c4mothqhdsk3o" path="res://hermite_spline.tscn" id="2_msip1"]
+[ext_resource type="Script" path="res://spline/LabelTest.gd" id="1_47hqr"]
+[ext_resource type="PackedScene" uid="uid://c4mothqhdsk3o" path="res://spline/hermite_spline.tscn" id="2_msip1"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kwggv"]
 shading_mode = 0
