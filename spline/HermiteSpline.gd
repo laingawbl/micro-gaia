@@ -3,7 +3,7 @@ extends MeshInstance3D
 
 signal changed
 
-enum TangentType { CATMULL_ROM, CARDINAL, FINITE_DIFFERENCE }
+enum TangentType { CATMULL_ROM, CARDINAL, FINITE_DIFFERENCE, MONOTONISH }
 
 @export var SegCount: int = 4:
 	set = _set_SegCount,
@@ -208,6 +208,11 @@ func tangent(prev: Vector3, curr: Vector3, next: Vector3) -> Vector3:
 			var d1 = 1.0 / prev.distance_to(curr)
 			var d2 = 1.0 / curr.distance_to(next)
 			return ((next - curr) * d2 + (curr - prev) * d1) * 0.5
+		TangentType.MONOTONISH:
+			var d1 = prev.distance_to(curr)
+			var d2 = curr.distance_to(next)
+			var dra = min(d1, d2) / (d1 + d2)
+			return (next - prev) * ((0.5 * (1.0 - SplineTension)) + (dra * SplineTension))
 		_:
 			return Vector3.ZERO
 

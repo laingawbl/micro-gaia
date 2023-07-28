@@ -20,6 +20,14 @@ extends Node3D
 	get:
 		return IsLoop
 
+@export var Tension: float:
+	set(p):
+		Tension = clamp(p, 0.0, 1.0)
+		if processed_once:
+			remesh()
+	get:
+		return Tension
+
 @export var Segments: int:
 	set(p):
 		Segments = clamp(p, 1, 64)
@@ -48,9 +56,9 @@ func remesh():
 			Segments,
 			Vector3.RIGHT * 0.01,
 			Vector3.RIGHT * 0.01,
-			HermiteCubic.TangentType.CATMULL_ROM,
+			HermiteCubic.TangentType.MONOTONISH,
 			false,
-			0.0
+			Tension
 		)
 	)
 
