@@ -1,8 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://dcxnct5heytj3"]
+[gd_scene load_steps=6 format=3 uid="uid://dcxnct5heytj3"]
 
 [ext_resource type="Script" path="res://RibbonInSlice.gd" id="1_fj3oj"]
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_2xpaw"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_3uohm"]
 _surfaces = [{
 "aabb": AABB(-8.74228e-08, -1, -0.1, 0.992344, 2.20001, 0.10001),
 "format": 4097,
@@ -17,7 +17,7 @@ _surfaces = [{
 shading_mode = 0
 albedo_color = Color(0.376471, 0.568627, 0.643137, 1)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_uveaf"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_2bhf7"]
 _surfaces = [{
 "aabb": AABB(-8.74228e-08, -1, -0.1, 0.992344, 2.20001, 0.10001),
 "format": 4097,
@@ -34,10 +34,6 @@ cull_mode = 2
 shading_mode = 0
 albedo_color = Color(0.835294, 0.964706, 0.976471, 0.164706)
 
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_umgf5"]
-height = 0.1
-radius = 0.005
-
 [node name="RibbonInSlice" type="Node3D"]
 script = ExtResource("1_fj3oj")
 Points = Array[Vector2]([Vector2(0, 0.2), Vector2(0.05, 0), Vector2(0.1, 0.05), Vector2(0.15, 0.01), Vector2(0.2, 0.04), Vector2(0.25, 0), Vector2(0.3, 0.1), Vector2(0.35, 0.1), Vector2(0.4, 0), Vector2(0.7, 0), Vector2(1, 0)])
@@ -47,17 +43,11 @@ Text = "93 kPa"
 Segments = 4
 
 [node name="RibbonMesh" type="MeshInstance3D" parent="."]
-mesh = SubResource("ArrayMesh_2xpaw")
+mesh = SubResource("ArrayMesh_3uohm")
 surface_material_override/0 = SubResource("StandardMaterial3D_7j3e2")
 
 [node name="FilledRibbonMesh" type="MeshInstance3D" parent="."]
-mesh = SubResource("ArrayMesh_uveaf")
+mesh = SubResource("ArrayMesh_2bhf7")
 surface_material_override/0 = SubResource("StandardMaterial3D_cqqwv")
 
 [node name="Labels" type="Node3D" parent="."]
-
-[node name="Area3D" type="Area3D" parent="."]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
-transform = Transform3D(-3, 0, 0, 0, 1.31134e-07, 3, 0, -3, 1.31134e-07, 0, 1.19371, -0.05)
-shape = SubResource("CylinderShape3D_umgf5")

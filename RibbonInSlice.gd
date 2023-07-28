@@ -47,7 +47,7 @@ extends Node3D
 @export var Mat: Material:
 	set = set_mat,
 	get = get_mat
-	
+
 @export var FillMat: Material:
 	set = set_fillMat,
 	get = get_fillMat
@@ -67,6 +67,7 @@ var label_normals: Array[Vector3] = []
 var labels: Array[Label3D] = []
 var collision_shapes: Array[CollisionShape3D] = []
 
+
 func set_mat(p: Material) -> void:
 	$RibbonMesh.material_override = p
 
@@ -74,12 +75,14 @@ func set_mat(p: Material) -> void:
 func get_mat() -> Material:
 	return $RibbonMesh.material_override
 
+
 func set_fillMat(p: Material) -> void:
 	$FilledRibbonMesh.material_override = p
 
 
 func get_fillMat() -> Material:
 	return $FilledRibbonMesh.material_override
+
 
 func relabel():
 	# clear old labels
@@ -117,6 +120,7 @@ func relabel():
 		labels.append(l)
 		$Labels.add_child(l)
 
+
 func make_meshes(knots: Array[Vector3]) -> HermiteCubic:
 	var hcBuilder = HermiteCubic.new()
 	(
@@ -150,7 +154,7 @@ func make_meshes(knots: Array[Vector3]) -> HermiteCubic:
 		fillSurf.add_vertex(back_verts[k])
 	fillSurf.index()
 	$FilledRibbonMesh.mesh = fillSurf.commit()
-	
+
 	back_verts.reverse()
 	verts.append_array(back_verts)
 	verts.append(verts[0])
@@ -161,8 +165,9 @@ func make_meshes(knots: Array[Vector3]) -> HermiteCubic:
 		surf.add_vertex(v)
 	surf.index()
 	$RibbonMesh.mesh = surf.commit()
-	
+
 	return hcBuilder
+
 
 func make_labels(hcBuilder: HermiteCubic):
 	label_points = hcBuilder.get_uniform_points(LabelSpacing)
@@ -183,30 +188,10 @@ func make_labels(hcBuilder: HermiteCubic):
 		relabel()
 
 
-func make_collision(knots: Array[Vector3]):
-	var Cs3: CollisionShape3D = $Area3D/CollisionShape3D
-	Cs3.disabled = true
-	
-	for cs in collision_shapes:
-		$Area3D.remove_child.call_deferred(cs)
-		cs.queue_free.call_deferred()
-	collision_shapes = []
-	
-	for k in knots:
-		var r = 1.0 + k.y
-		var p3 = Vector3.UP.rotated(Vector3.FORWARD, k.x * PI) * r
-		p3.z = -0.05
-		var d: CollisionShape3D = Cs3.duplicate()
-		d.disabled = false
-		d.position = p3
-		
-		collision_shapes.append(d)
-		$Area3D.add_child.call_deferred(d)
-
 func remesh():
 	if len(Points) < 2:
 		return
-	
+
 	var knots: Array[Vector3] = []
 	for p2 in Points:
 		var p3 = Vector3(p2.x, p2.y, 0.0)
@@ -214,7 +199,7 @@ func remesh():
 
 	var hcBuilder = make_meshes(knots)
 	make_labels(hcBuilder)
-	make_collision(knots)
+
 
 func _ready():
 	remesh()
@@ -222,3 +207,8 @@ func _ready():
 
 func _process(_delta):
 	processed_once = true
+
+
+func _on_area_3d_input_event(_camera, event, _position, _normal, shape_idx):
+	if event is InputEventMouseButton and event.pressed:
+		printt(Text, shape_idx)

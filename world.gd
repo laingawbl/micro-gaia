@@ -13,7 +13,7 @@ var level_mesh_ribbons: Array = []
 
 func _ready():
 	var ribbonScene = preload("res://ribbon_in_slice.tscn")
-	
+
 	for r in range(SimData.nR):
 		var ribbon = ribbonScene.instantiate()
 		ribbon.Segments = 4
@@ -21,7 +21,7 @@ func _ready():
 
 		var matcopy: BaseMaterial3D = RibbonMat.duplicate()
 		var fillmatcopy: BaseMaterial3D = FillRibbonMat.duplicate()
-		
+
 		var t = (SimData.halfLevels[r] - SimData.Pt) / (SimData.Po - SimData.Pt)
 		var base = RibbonGradient.sample(1.0 - t)
 		var faded = Color((base + Color.WHITE) * 0.5, 0.2)
@@ -49,7 +49,7 @@ func on_ics_changed():
 			var yu = SimData.ZLevels[x][r] * SimData.VertScale * 1e-3
 			data_at_level.append(Vector2(xu, yu))
 		level_mesh_ribbons[r].Points = data_at_level
-		level_mesh_ribbons[r].Text = String.num(SimData.levels[r+1] * 1e-3, 1) + "kPa"
+		level_mesh_ribbons[r].Text = String.num(SimData.levels[r + 1] * 1e-3, 1) + "kPa"
 
 
 func _on_area_3d_input_event(
