@@ -5,6 +5,7 @@ extends Node3D
 @onready var RuleMeshLabel: Label3D = $CoordinateMeshes/RuleMeshLabel
 
 @export var RibbonMat: BaseMaterial3D
+@export var FillRibbonMat: BaseMaterial3D
 @export var RibbonGradient: Gradient
 
 var level_mesh_ribbons: Array = []
@@ -12,15 +13,22 @@ var level_mesh_ribbons: Array = []
 
 func _ready():
 	var ribbonScene = preload("res://ribbon_in_slice.tscn")
+	
 	for r in range(SimData.nR):
 		var ribbon = ribbonScene.instantiate()
 		ribbon.Segments = 4
 		ribbon.LabelSpacing = 0.15
 
 		var matcopy: BaseMaterial3D = RibbonMat.duplicate()
+		var fillmatcopy: BaseMaterial3D = FillRibbonMat.duplicate()
+		
 		var t = (SimData.halfLevels[r] - SimData.Pt) / (SimData.Po - SimData.Pt)
-		matcopy.set_albedo(RibbonGradient.sample(1.0 - t))
+		var base = RibbonGradient.sample(1.0 - t)
+		var faded = Color((base + Color.WHITE) * 0.5, 0.2)
+		matcopy.set_albedo(base)
+		fillmatcopy.set_albedo(faded)
 		ribbon.Mat = matcopy
+		ribbon.FillMat = fillmatcopy
 
 		level_mesh_ribbons.append(ribbon)
 		$CoordinateMeshes/LevelMeshes.add_child.call_deferred(ribbon)
@@ -41,8 +49,7 @@ func on_ics_changed():
 			var yu = SimData.ZLevels[x][r] * SimData.VertScale * 1e-3
 			data_at_level.append(Vector2(xu, yu))
 		level_mesh_ribbons[r].Points = data_at_level
-		level_mesh_ribbons[r].Text = String.num(SimData.halfLevels[r] * 1e-3, 1) + "kPa"
-		printt(r, level_mesh_ribbons[r].Text)
+		level_mesh_ribbons[r].Text = String.num(SimData.levels[r+1] * 1e-3, 1) + "kPa"
 
 
 func _on_area_3d_input_event(

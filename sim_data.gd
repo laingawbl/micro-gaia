@@ -66,6 +66,8 @@ func _init() -> void:
 	make_to_shape(ICTemperature, 290)
 	make_to_shape(ZLevels)
 
+	calc_levels()
+	
 	UpdateTimer = Timer.new()
 	UpdateTimer.one_shot = true
 	UpdateTimer.autostart = true
@@ -173,15 +175,23 @@ func recalc_ref_state():
 	for i in range(nX):
 		var sumBuoyancy = 0.0
 		var ZLevelsDownward: Array = []
-		ZLevelsDownward.resize(nR)
+		ZLevelsDownward.resize(nR+1)
+		ZLevelsDownward[0] = 0.0
 		for j in range(nR):
+			# Exner, ICTemp, and buoyancy get defined at half-levels.
 			var buoyancy = Exner[j] * ICTemperature[i][j] / 1e3
+			# This yields midpt. for a rectangular approximation to the
+			# integral of buoyancy with depth.
 			sumBuoyancy += (levels[j + 1] - levels[j]) * buoyancy
-			ZLevelsDownward[j] = sumBuoyancy / g
+			# ... yielding the pressure at the (j+1)'th level
+			ZLevelsDownward[j+1] = sumBuoyancy / g
 
-		var zBtm = ZLevelsDownward[nR - 1]
+		var zBtm = ZLevelsDownward[nR]
+		var zTopo = 0.0 # TODO
+		
+		# now reverse the indexing so that the bottom geopotential is at z=Ztopo
 		for j in range(nR):
-			ZLevels[i][j] = zBtm - ZLevelsDownward[j]
+			ZLevels[i][j] = zBtm - ZLevelsDownward[j] + zTopo
 
 		if ceil(sumBuoyancy / 1e3 / g) > maxZLevelSeen:
 			maxZLevelSeen = ceil(sumBuoyancy / 1e3 / g)
