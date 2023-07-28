@@ -141,3 +141,50 @@ func build_hermite_spline(
 	else:
 		normal_list[0] = Vector3.BACK
 		normal_list.append(Vector3.BACK)
+
+
+func get_uniform_points(spacing: float, ofs: float = 0.5) -> Array[Vector3]:
+	if len(vert_list) < 2:
+		return []
+
+	var arc: float = 0.0
+	var nextPoint: float = clamp(ofs, 0.0, 1.0) * spacing
+	var points: Array[Vector3] = []
+	for k in range(1, len(vert_list)):
+		var a = vert_list[k - 1]
+		var b = vert_list[k]
+		var segLen = a.distance_to(b)
+		while arc + segLen > nextPoint:
+			var t = nextPoint - arc
+			var dir = a.direction_to(b)
+			var newPt: Vector3 = a + dir * t
+			points.append(newPt)
+			nextPoint += spacing
+
+		arc += segLen
+
+	return points
+
+
+func get_uniform_normals(spacing: float, ofs: float = 0.5) -> Array[Vector3]:
+	if len(vert_list) < 2:
+		return []
+
+	var arc: float = 0.0
+	var nextPoint: float = clamp(ofs, 0.0, 1.0) * spacing
+	var points: Array[Vector3] = []
+	for k in range(1, len(vert_list)):
+		var a = vert_list[k - 1]
+		var b = vert_list[k]
+		var nA: Vector3 = normal_list[k - 1]
+		var nB: Vector3 = normal_list[k - 2]
+		var segLen = a.distance_to(b)
+		while arc + segLen > nextPoint:
+			var t = (nextPoint - arc) / segLen
+			var newNorm: Vector3 = nB.slerp(nA, t)
+			points.append(newNorm.normalized())
+			nextPoint += spacing
+
+		arc += segLen
+
+	return points

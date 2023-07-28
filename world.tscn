@@ -1,8 +1,15 @@
-[gd_scene load_steps=10 format=3 uid="uid://d2pc0u38e2pm7"]
+[gd_scene load_steps=12 format=3 uid="uid://d2pc0u38e2pm7"]
 
 [ext_resource type="Script" path="res://world.gd" id="1_w1nqv"]
 [ext_resource type="PackedScene" uid="uid://bao8qvqq5xyp3" path="res://rect_geom/rule_mesh.tscn" id="2_gfhr4"]
 [ext_resource type="Script" path="res://RotatingCam.gd" id="2_x8e6k"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3myli"]
+shading_mode = 0
+
+[sub_resource type="Gradient" id="Gradient_s1d36"]
+offsets = PackedFloat32Array(0.0045045, 0.0585586, 1)
+colors = PackedColorArray(0.780693, 0.985067, 1, 1, 0.491174, 0.964852, 1, 1, 0.0835985, 0.466524, 0.609375, 1)
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_241in"]
 sky_top_color = Color(0.184314, 0.309804, 0.309804, 1)
@@ -37,6 +44,8 @@ points = PackedVector3Array(-0.0123336, -0.05, -1, -0.0246672, -0.05, -0.999804,
 
 [node name="Node3D" type="Node3D"]
 script = ExtResource("1_w1nqv")
+RibbonMat = SubResource("StandardMaterial3D_3myli")
+RibbonGradient = SubResource("Gradient_s1d36")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.304229, 1.01578, 0.26726)

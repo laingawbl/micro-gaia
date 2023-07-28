@@ -66,11 +66,14 @@ func _init() -> void:
 	make_to_shape(ICTemperature, 290)
 	make_to_shape(ZLevels)
 
-	calc_levels()
-
 	UpdateTimer = Timer.new()
 	UpdateTimer.one_shot = true
 	UpdateTimer.autostart = true
+
+
+func _ready() -> void:
+	recalc_params()
+	recalc_ref_state()
 
 
 func _enter_tree():
@@ -80,7 +83,8 @@ func _enter_tree():
 func _set_g(p) -> void:
 	g = clamp(p, 1.0, 20.0)
 	ParamsDidChange = true
-	UpdateTimer.start(UpdateDebounceTime)
+	if UpdateTimer.is_inside_tree():
+		UpdateTimer.start(UpdateDebounceTime)
 
 
 func _get_g() -> float:
@@ -90,7 +94,8 @@ func _get_g() -> float:
 func _set_mm(p) -> void:
 	mm = clamp(p, 1.0, 100.0)
 	ParamsDidChange = true
-	UpdateTimer.start(UpdateDebounceTime)
+	if UpdateTimer.is_inside_tree():
+		UpdateTimer.start(UpdateDebounceTime)
 
 
 func _get_mm() -> float:
@@ -100,7 +105,8 @@ func _get_mm() -> float:
 func _set_cp(p) -> void:
 	cp = clamp(p, 1.0, 10000.0)
 	ParamsDidChange = true
-	UpdateTimer.start(UpdateDebounceTime)
+	if UpdateTimer.is_inside_tree():
+		UpdateTimer.start(UpdateDebounceTime)
 
 
 func _get_cp() -> float:
@@ -110,7 +116,8 @@ func _get_cp() -> float:
 func _set_Po(p) -> void:
 	Po = clamp(p, Pt, 1e6)
 	ParamsDidChange = true
-	UpdateTimer.start(UpdateDebounceTime)
+	if UpdateTimer.is_inside_tree():
+		UpdateTimer.start(UpdateDebounceTime)
 
 
 func _get_Po() -> float:
@@ -120,7 +127,8 @@ func _get_Po() -> float:
 func _set_Pt(p) -> void:
 	Pt = clamp(p, 1.0, Po)
 	ParamsDidChange = true
-	UpdateTimer.start(UpdateDebounceTime)
+	if UpdateTimer.is_inside_tree():
+		UpdateTimer.start(UpdateDebounceTime)
 
 
 func _get_Pt() -> float:
@@ -157,7 +165,6 @@ func recalc_params():
 	Rspec = R / mm
 	kappa = Rspec / cp
 	calc_levels()
-
 	emit_signal("param_update")
 
 
@@ -165,10 +172,16 @@ func recalc_ref_state():
 	var maxZLevelSeen = 0.0
 	for i in range(nX):
 		var sumBuoyancy = 0.0
+		var ZLevelsDownward: Array = []
+		ZLevelsDownward.resize(nR)
 		for j in range(nR):
 			var buoyancy = Exner[j] * ICTemperature[i][j] / 1e3
 			sumBuoyancy += (levels[j + 1] - levels[j]) * buoyancy
-			ZLevels[i][j] = sumBuoyancy / g
+			ZLevelsDownward[j] = sumBuoyancy / g
+
+		var zBtm = ZLevelsDownward[nR - 1]
+		for j in range(nR):
+			ZLevels[i][j] = zBtm - ZLevelsDownward[j]
 
 		if ceil(sumBuoyancy / 1e3 / g) > maxZLevelSeen:
 			maxZLevelSeen = ceil(sumBuoyancy / 1e3 / g)
