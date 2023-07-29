@@ -2,19 +2,27 @@ class_name HermiteCubic extends Object
 
 var vert_list: Array[Vector3] = []
 var normal_list: Array[Vector3] = []
-var uv_list: Array[Vector3] = []
-var line_strip: Array[Vector3] = []
+var uv_list: Array[Vector2] = []
+var tangent_list: Array[Vector3] = []
+var segment_lengths: Array[float] = []
 
 enum TangentType { CATMULL_ROM, CARDINAL, FINITE_DIFFERENCE, MONOTONISH }
 
+var _weights: Array[float] = []
+var _weight_squares: Array[float] = []
+var _weight_cubes: Array[float] = []
 
-func hermite(p1: float, p2: float, v1: float, v2: float, t: float) -> float:
-	var t2 = t * t
-	var t3 = t * t * t
+
+func indexed_hermite(p1: float, p2: float, v1: float, v2: float, s: int) -> float:
+	var t = _weights[s]
+	var t2 = _weight_squares[s]
+	var t3 = _weight_cubes[s]
+
 	var a = 1 - 3 * t2 + 2 * t3
 	var b = t2 * (3 - 2 * t)
 	var c = t * (t - 1) * (t - 1)
 	var d = t2 * (t - 1)
+
 	return a * p1 + b * p2 + c * v1 + d * v2
 
 
@@ -26,11 +34,6 @@ func tangent(
 	SplineTension: float = 0.0
 ) -> Vector3:
 	match SplineTangentType:
-		TangentType.CATMULL_ROM:
-			return (next - prev) * 0.5
-		TangentType.CARDINAL:
-			var d = 1.0 / prev.distance_to(next)
-			return (1.0 - SplineTension) * (next - prev) * d
 		TangentType.FINITE_DIFFERENCE:
 			var d1 = 1.0 / prev.distance_to(curr)
 			var d2 = 1.0 / curr.distance_to(next)
@@ -44,6 +47,48 @@ func tangent(
 			return Vector3.ZERO
 
 
+func make_tangents(
+	Points: Array[Vector3], SplineTangentType: TangentType, SplineTension: float
+) -> void:
+	var point_count = len(Points)
+	match SplineTangentType:
+		TangentType.CATMULL_ROM:
+			for k in range(1, point_count - 1):
+				var prev: Vector3 = Points[k - 1]
+				var next: Vector3 = Points[k + 1]
+				tangent_list[k] = (next - prev) * 0.5
+
+		TangentType.CARDINAL:
+			for k in range(1, point_count - 1):
+				var prev: Vector3 = Points[k - 1]
+				var next: Vector3 = Points[k + 1]
+				var d = segment_lengths[k - 1] + segment_lengths[k]
+				tangent_list[k] = (1.0 - SplineTension) * (next - prev) * d
+
+		TangentType.FINITE_DIFFERENCE:
+			var prev: Vector3 = Points[0]
+			var curr: Vector3 = Points[1]
+			for k in range(1, point_count - 1):
+				var next: Vector3 = Points[k + 1]
+				var d1 = segment_lengths[k - 1]
+				var d2 = segment_lengths[k]
+				tangent_list[k] = ((next - curr) / d2 + (curr - prev) / d1) * 0.5
+				prev = curr
+				curr = next
+
+		TangentType.MONOTONISH:
+			for k in range(1, point_count - 1):
+				var prev: Vector3 = Points[k - 1]
+				var next: Vector3 = Points[k + 1]
+				var d1 = segment_lengths[k - 1]
+				var d2 = segment_lengths[k]
+				var d_ratio = min(d1, d2) / (d1 + d2)
+				var w = 0.5 * (1.0 - SplineTension) + d_ratio * SplineTension
+				tangent_list[k] = (next - prev) * w
+		_:
+			pass
+
+
 func build_hermite_spline(
 	Points: Array[Vector3],
 	SegCount: int = 8,
@@ -53,94 +98,119 @@ func build_hermite_spline(
 	UniformUVSampling: bool = false,
 	SplineTension: float = 0.0
 ):
+	var t_start = Time.get_ticks_usec()
 	if len(Points) < 2:
 		return
 
-	vert_list = []
-	var vertices: Array[Vector3] = []
-	var uvs: Array[Vector2] = []
+	# first, precompute weights and their squares and cubes.
+	_weights.resize(SegCount)
+	_weight_squares.resize(SegCount)
+	_weight_cubes.resize(SegCount)
+	for seg_number in range(SegCount):
+		var t = float(seg_number) / SegCount
+		_weights[seg_number] = t
+		_weight_squares[seg_number] = t * t
+		_weight_cubes[seg_number] = t * t * t
 
-	var prev_tangent: Vector3
-	if StartHandle != Vector3.ZERO:
-		prev_tangent = StartHandle
-	else:
-		prev_tangent = Points[0].direction_to(Points[1])
+	# resize all arrays to expected number of vertices.
+	var point_count = len(Points)
+	var vertex_count = (point_count - 1) * SegCount + 1
+	vert_list.resize(vertex_count)
+	uv_list.resize(vertex_count)
+	normal_list.resize(vertex_count)
 
+	tangent_list.resize(point_count)
+	segment_lengths.resize(point_count - 1)
+
+	# set up segment lengths, and if not using point-uniform UV, total arc.
 	var total_arc: float = 0.0
-	var arc: float = 0.0
-	var vert_cols: Array[Color] = []
+	for k in range(1, point_count):
+		var this_seg_length = Points[k - 1].distance_to(Points[k])
+		segment_lengths[k - 1] = this_seg_length
+		if not UniformUVSampling:
+			total_arc += this_seg_length
 
 	if UniformUVSampling:
-		total_arc = len(Points) - 1.0
+		total_arc = float(point_count) - 1.0
+
+	# set up tangents, including end handles.
+	if StartHandle != Vector3.ZERO:
+		tangent_list[0] = StartHandle
 	else:
-		for n in range(1, len(Points)):
-			total_arc += Points[n - 1].distance_to(Points[n])
+		tangent_list[0] = Points[0].direction_to(Points[1])
 
-	for n in range(1, len(Points)):
-		var prev: Vector3 = Points[n - 1]
-		var curr: Vector3 = Points[n]
-		var this_interval: float
-		if UniformUVSampling:
-			this_interval = 1.0
-		else:
-			this_interval = prev.distance_to(curr)
+	if EndHandle != Vector3.ZERO:
+		tangent_list[point_count - 1] = EndHandle
+	else:
+		tangent_list[point_count - 1] = (
+			Points[point_count - 2] . direction_to(Points[point_count - 1])
+		)
 
-		# calculate the tangent at `curr`
-		var curr_tangent: Vector3
-		if n == len(Points) - 1:
-			if EndHandle != Vector3.ZERO:
-				curr_tangent = EndHandle
-			else:
-				var lp = len(Points)
-				curr_tangent = Points[lp - 2].direction_to(Points[lp - 1])
-		else:
-			var next: Vector3 = Points[n + 1]
-			curr_tangent = tangent(prev, curr, next, SplineTangentType, SplineTension)
+	make_tangents(Points, SplineTangentType, SplineTension)
 
-		# add vertices along interval
-		vert_list.append(prev)
-		uvs.append(Vector2(arc / total_arc, 0))
+	# now we are ready to do the actual interpolation
+	var arc: float = 0.0
+	var prev: Vector3 = Points[0]
+	var prev_tangent: Vector3 = tangent_list[0]
 
-		for k in range(1, SegCount):
-			var t = float(k) / SegCount
-			var xt = hermite(prev.x, curr.x, prev_tangent.x, curr_tangent.x, t)
-			var yt = hermite(prev.y, curr.y, prev_tangent.y, curr_tangent.y, t)
-			var zt = hermite(prev.z, curr.z, prev_tangent.z, curr_tangent.z, t)
-			var seg_next = Vector3(xt, yt, zt)
-			vert_list.append(seg_next)
+	for k in range(1, point_count):
+		var base: int = (k - 1) * SegCount
+		var interval: float = segment_lengths[k - 1]
 
-			var seg_uv = (arc + this_interval * t) / total_arc
-			uvs.append(Vector2(seg_uv, 0))
+		var curr: Vector3 = Points[k]
+		var curr_tangent: Vector3 = tangent_list[k]
 
-		vertices.append(curr)
+		# add vertices along the interval from `prev` to `curr`
+		vert_list[base] = prev
+		uv_list[base] = Vector2(arc / total_arc, 0)
+
+		for s in range(1, SegCount):
+			var xt = indexed_hermite(prev.x, curr.x, prev_tangent.x, curr_tangent.x, s)
+			var yt = indexed_hermite(prev.y, curr.y, prev_tangent.y, curr_tangent.y, s)
+			var zt = indexed_hermite(prev.z, curr.z, prev_tangent.z, curr_tangent.z, s)
+			var seg_uv = (arc + interval * _weights[s]) / total_arc
+			vert_list[base + s] = Vector3(xt, yt, zt)
+			uv_list[base + s] = Vector2(seg_uv, 0)
+
 		prev_tangent = curr_tangent
+		prev = curr
+		arc += interval
 
-		arc += this_interval
-
-	vert_list.append(Points[len(Points) - 1])
-	uvs.append(Vector2(1.0, 0.0))
+	vert_list[vertex_count - 1] = Points[point_count - 1]
+	uv_list[vertex_count - 1] = Vector2(1.0, 0.0)
 
 	# calculate normals for each vertex
-	normal_list = []
-	normal_list.append(Vector3.FORWARD)
-	for k in range(1, len(vert_list) - 1):
+	for k in range(1, vertex_count - 1):
 		var a: Vector3 = vert_list[k - 1]
 		var b: Vector3 = vert_list[k]
 		var c: Vector3 = vert_list[k + 1]
 		var d1 = a.direction_to(b)
 		var d2 = b.direction_to(c)
-		normal_list.append((d1 - d2).normalized())
+		normal_list[k] = d1.direction_to(d2)
 
 	# copy normals to endpoints
-	if len(normal_list) > 1:
-		var first_normal = normal_list[1]
-		var last_normal = normal_list[len(normal_list) - 1]
-		normal_list[0] = first_normal
-		normal_list.append(last_normal)
-
+	if len(normal_list) > 2:
+		normal_list[0] = normal_list[1]
+		normal_list[len(normal_list) - 1] = normal_list[len(normal_list) - 2]
 	else:
-		normal_list[0] = Vector3.BACK
-		normal_list.append(Vector3.BACK)
+		normal_list[0] = Vector3.UP
+		normal_list[1] = Vector3.UP
+
+	var t_end = Time.get_ticks_usec()
+	var dur = (t_end - t_start) * 1e-3
+	print(
+		(
+			"Hermite: "
+			+ str(len(Points))
+			+ " points took "
+			+ String.num(dur, 2)
+			+ " ms\t"
+			+ str(len(vert_list))
+			+ " verts, "
+			+ String.num(dur / len(vert_list) * 1e3, 2)
+			+ " us / vert"
+		)
+	)
 
 
 func get_uniform_points(spacing: float, ofs: float = 0.5) -> Array[Vector3]:

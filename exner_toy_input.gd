@@ -94,12 +94,14 @@ func _ready():
 	SimData.connect("ic_update", Callable(self, "layout"))
 
 	var input_helptext = (
-		FileAccess . open("res://input_helptext.bb.txt", FileAccess.READ) . get_as_text(true)
+		FileAccess . open("user://data/input_helptext.bb.txt", FileAccess.READ) . get_as_text(true)
 	)
 	$Help/Panel/InnerMargins/Label.text = input_helptext
 
 	defaults = ConfigFile.new()
-	defaults.load("res://data/default_params.ini")
+	var err = defaults.load("user://data/default_params.ini")
+	if err != OK:
+		push_error("loading defaults:", err)
 
 	var root = tree.create_item()
 	tree.hide_root = true

@@ -16,7 +16,7 @@ func _ready():
 
 	for r in range(SimData.nR):
 		var ribbon = ribbonScene.instantiate()
-		ribbon.Segments = 4
+		ribbon.Segments = 2
 		ribbon.LabelSpacing = 0.15
 
 		var matcopy: BaseMaterial3D = RibbonMat.duplicate()
@@ -41,6 +41,7 @@ func on_ics_changed():
 	RuleMesh.maxR = SimData.MaxZ
 	RuleMesh.scaleR = SimData.VertScale
 
+	var t_start = Time.get_ticks_usec()
 	# draw level meshes
 	for r in range(SimData.nR):
 		var data_at_level: Array[Vector2] = []
@@ -50,6 +51,10 @@ func on_ics_changed():
 			data_at_level.append(Vector2(xu, yu))
 		level_mesh_ribbons[r].Points = data_at_level
 		level_mesh_ribbons[r].Text = String.num(SimData.levels[r + 1] * 1e-3, 1) + "kPa"
+
+	var t_end = Time.get_ticks_usec()
+	var dur = (t_end - t_start) * 1e-3
+	print("Levels: took " + String.num(dur, 2) + " ms")
 
 
 func _on_area_3d_input_event(

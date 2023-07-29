@@ -121,6 +121,7 @@ func relabel():
 		$Labels.add_child(l)
 
 
+# This is the slow part by far, needs optimisation
 func make_meshes(knots: Array[Vector3]) -> HermiteCubic:
 	var hcBuilder = HermiteCubic.new()
 	(
