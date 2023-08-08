@@ -23,6 +23,10 @@ SimData="*res://sim_data.gd"
 
 gdscript/warnings/integer_division=0
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+
 [gui]
 
 theme/custom_font="res://font/space-mono-font/SpaceMonoRegular-JRrmm.ttf"
