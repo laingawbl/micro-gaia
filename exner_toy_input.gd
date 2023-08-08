@@ -90,6 +90,8 @@ func layout():
 
 
 func _ready():
+	print(Adder.Add(3, 6))
+	
 	SimData.connect("param_update", Callable(self, "params_did_update"))
 	SimData.connect("ic_update", Callable(self, "layout"))
 
