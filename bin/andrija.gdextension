@@ -1,0 +1,9 @@
+[configuration]
+
+entry_symbol = "andrija_init"
+compatibility_minimum = 4.1
+
+[libraries]
+
+linux.debug.x86_64 = "res://bin/libandrija.linux.template_debug.x86_64.so"
+linux.release.x86_64 = "res://bin/libandrija.linux.template_release.x86_64.so"
